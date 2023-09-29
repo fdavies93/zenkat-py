@@ -1,5 +1,5 @@
 from argparse import ArgumentParser
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, asdict
 import os
 from datetime import datetime
 from pathlib import Path
@@ -10,8 +10,8 @@ import re
 class Page:
     filename: str
     path: str
-    created_at: float
-    modified_at: float
+    created_at: datetime
+    modified_at: datetime
     tags: set[str] = field(default_factory=set)
     # this should be unpacked when making a dataframe
     metadata: dict[str, Any] = field(default_factory=dict)
@@ -37,8 +37,8 @@ def get_file_data(path : str, exclude : list = []):
         cur_page = Page(
             p.name,
             abs,
-            os.path.getctime(abs),
-            os.path.getmtime(abs)
+            datetime.fromtimestamp(os.path.getctime(abs)),
+            datetime.fromtimestamp(os.path.getmtime(abs))
         )
         document = p.read_text()
         cur_page.tags = get_tags(document)
@@ -52,10 +52,17 @@ def get_content(page : Page):
         content = f.read()
     return content
 
-def index(path : str, exclude : list = []):
+def query(path : str, exclude : list = []):
     # recursively crawl subdirectories for .md files, output as a data structure
     pages = get_file_data(path, exclude)
     return pages
+
+def format_list(pages : list[Page], f_str : str):
+    outputs = []
+    for p in pages:
+        o = asdict(p)
+        outputs.append(f_str.format_map(o))
+    return outputs
 
 def parse(query_str : str):
     # {LIST, TABLE, JSON, CSV} AS {txt, json, csv}
@@ -63,7 +70,7 @@ def parse(query_str : str):
     raise NotImplementedError()
 
 def main():
-    index(".")
+    query(".")
 
 if __name__ == "__main__":
     main()
