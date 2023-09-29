@@ -1,0 +1,26 @@
+# In pest.rs format
+
+# TODO:
+# - make a binary minus operator and distinguish in lexer
+#   (this fixes precedence in expressions like 10 - 10 * 5)
+#   still include unary operator for bracket expressions etc
+# - HANDWRITE RECURSIVE DESCENT PARSER FROM GRAMMAR (?)
+
+program = {expr ~ ("\n" ~ expr)*}
+expr = { assignment | add }
+term = { number | token | bracket_expr | unary_expr }
+assignment = { token ~ "=" ~ expr }
+unary_expr = {unary_op ~ expr}
+add = {mul ~ ("+" | "-" ~ add)?}
+mul = {term ~ (("/" | "*") ~ mul)?}
+bracket_expr = {"(" ~ expr ~ ")"}
+
+binary_op = {"+" | "*" | "/"}
+unary_op = {"NEG"}
+
+number = {'0'..'9'+ ~ ("." ~ '0'..'9'+)?}
+token = {('A'..'Z' | 'a'..'z' | "_")+}
+
+# random pest.rs stuff
+word = {('A'..'Z' | 'a'..'z' | "_")+}
+sentence = {word* ~ (" " ~ sentence)?}
