@@ -1,4 +1,4 @@
-*Note that this project is in a very early stage right now."
+*Note that this project is in a very early stage right now.*
 
 # ZenKat
 
@@ -11,3 +11,5 @@ It's named this way because of my bad memory for German. I remembered ZEttelKAsT
 ## Recommended Setup
 
 ZenKat has no dependencies but also no easy install method. For now I recommend cloning the repo and creating an alias for `python3 zk.py` as `zk`.
+
+It's also worth installing [Marksman LSP](https://github.com/artempyanykh/marksman) if you plan on working with plaintext files a lot. This should work with major CLI editors including Helix and Neovim. I use Helix.
