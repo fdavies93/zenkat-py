@@ -19,13 +19,23 @@ def calculate_links(pages: list[zenkat.Page]):
             link_count[l] += 1
     return link_count            
 
-argparse.ArgumentParser(prog="Zenkat", description="Library and CLI to use plain markdown files as a Zettelkasten knowledge store.")
+def cmd_list(args):
+    exclude = []
+    if args.exclude != None:
+        exclude = args.exclude
+    pages = zenkat.index(args.path, exclude)
+    for p in pages:
+        print(f"{p.filename} ({p.path})")
 
 def main():
-    pages = zenkat.index(".", exclude=[".excalidraw"])
-    print(unique_tags(pages))
-    print(calculate_links(pages))
-    # print(filter_by_tag(pages, "#ffffff"))
+    parser = argparse.ArgumentParser(prog="zk", description="Zenkat: Library and CLI to use plain markdown files as a Zettelkasten knowledge store.")
+    parser.add_argument('command', choices=['list'])
+    parser.add_argument('--path', nargs='?', const='.', type=str, default='.')
+    parser.add_argument("-e","--exclude",action='append')
+    args = parser.parse_args()
+    
+    if args.command == 'list':
+        cmd_list(args)
     
 if __name__ == "__main__":
     main()
