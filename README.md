@@ -57,6 +57,7 @@ zk list --filter "tags has personal"
 ### Fields
 
 ```
+title: str
 filename: str
 abs_path: str
 rel_path: str
