@@ -1,5 +1,6 @@
-import zenkat
+from . import zenkat
 import argparse
+import sys
 
 def get_pages(args):
     exclude = []
@@ -48,4 +49,4 @@ def main():
     cmd_map[args.command](args)
     
 if __name__ == "__main__":
-    main()
+    sys.exit(main())
