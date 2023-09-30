@@ -10,7 +10,7 @@ It's named this way because of my bad memory for German. I remembered ZEttelKAsT
 
 ## Recommended Setup
 
-Zenkat has no dependencies beyond the Python standard library and can be [installed from PyPi](https://pypi.org/project/zenkat/).
+Zenkat has no dependencies beyond the Python standard library and can be [installed from PyPi](https://pypi.org/project/zenkat/). It also installs the zk convenience script.
 
 ```
 pip install zenkat
@@ -22,7 +22,7 @@ For viewing files as formatted you can use [MD Fileserver](https://github.com/co
 
 ## Usage
 
-ZenKat supports basic filtering, formatting, and sorting of results based on the fields it indexes. At the moment it can output pages and current tags used across pages. You can customise the output using `--format`. For example, with an alias of `zk`:
+ZenKat supports basic filtering, formatting, and sorting of results based on the fields it indexes. At the moment it can output pages and current tags used across pages. You can customise the output using `--format`.
 
 ```
 zk list --filter "tags has todo" --format "{rel_path} {tags}"
