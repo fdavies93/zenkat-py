@@ -16,7 +16,7 @@ For viewing files as formatted you can use [MD Fileserver](https://github.com/co
 
 ## Usage
 
-ZenKat supports basic filtering and formatting of results based on the fields it indexes. At the moment it can output pages and current tags used across pages. You can customise the output using `--format`. For example, with an alias of `zk`:
+ZenKat supports basic filtering, formatting, and sorting of results based on the fields it indexes. At the moment it can output pages and current tags used across pages. You can customise the output using `--format`. For example, with an alias of `zk`:
 
 ```
 zk list --filter "tags has todo" --format "{rel_path} {tags}"
