@@ -10,16 +10,18 @@ from operator import attrgetter
 
 @dataclass()
 class Page:
+    title: str
     filename: str
     abs_path: str
     rel_path: str
     created_at: datetime
     modified_at: datetime
     tags: set[str] = field(default_factory=set)
-    # this should be unpacked when making a dataframe
-    metadata: dict[str, Any] = field(default_factory=dict)
-    links: set[str] = field(default_factory=set)
-
+    out_links: set[str] = field(default_factory=set)
+    out_link_count: int = 0
+    in_links: set[str] = field(default_factory=set)
+    in_link_count: int = 0
+    
 def get_tags(document: str):
     matches = re.findall("(?:^|\s)#([-_\w\d]+)",document)
     return set(matches)
@@ -37,7 +39,13 @@ def index(path : str, exclude : list = []):
             continue
         
         abs = str(p.absolute())
+
+        title = p
+        while title.suffix: title = title.with_suffix("")
+        title = title.name
+        
         cur_page = Page(
+            title,
             p.name,
             abs,
             str(p.relative_to(path)),
@@ -46,7 +54,8 @@ def index(path : str, exclude : list = []):
         )
         document = p.read_text()
         cur_page.tags = get_tags(document)
-        cur_page.links = get_wiki_links(document)
+        cur_page.out_links = get_wiki_links(document)
+        cur_page.out_link_count = len(cur_page.out_links)
         
         pages.append(cur_page)
     return pages
@@ -79,6 +88,8 @@ def generate_filter(filter_str : str, date_format = "%b %d %Y %I:%M%p"):
 
     if tokens[0] in ("created_at", "modified_at"):
         tokens[2] = datetime.strptime(tokens[2],date_format)
+    elif tokens[0] in ("out_link_count", "in_link_count"):
+        tokens[2] = int(tokens[2])
 
     return lambda p : fn(p.__dict__[tokens[0]], tokens[2])
 

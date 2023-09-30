@@ -5,7 +5,6 @@ def get_pages(args):
     exclude = []
     if args.exclude != None:
         exclude = args.exclude
-    f_str = "{filename} ({rel_path})"
     filter_strs = []
     if args.filter != None:
         filter_strs = args.filter
@@ -25,6 +24,7 @@ def cmd_tags(args):
 
 def cmd_list(args):
     pages = get_pages(args)
+    f_str = "{title} ({rel_path})"
     if args.format != None:
         f_str = args.format
     ls = zenkat.format_list(pages, f_str)

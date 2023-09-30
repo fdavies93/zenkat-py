@@ -13,7 +13,8 @@
   - Extract tasks / lists and display metadata
   - Document structure in headings
   - Keyword search
+- Add bookmark utility
 
 # Todo
 - Make links resolve to backlinks
-- Add sort method with syntax
+- Include link count in object data
