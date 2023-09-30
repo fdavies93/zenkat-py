@@ -3,10 +3,10 @@ from dataclasses import dataclass, field, asdict
 import os
 from datetime import datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
 import re
 
-@dataclass
+@dataclass()
 class Page:
     filename: str
     path: str
@@ -26,7 +26,7 @@ def get_wiki_links(document : str):
     # might want to resolve to an absolute path
     return set(matches)
     
-def get_file_data(path : str, exclude : list = []):
+def index(path : str, exclude : list = []):
     pages = []
     for p in Path(path).rglob("*.md"):
         suffixes = set(p.suffixes)
@@ -52,11 +52,6 @@ def get_content(page : Page):
         content = f.read()
     return content
 
-def query(path : str, exclude : list = []):
-    # recursively crawl subdirectories for .md files, output as a data structure
-    pages = get_file_data(path, exclude)
-    return pages
-
 def format_list(pages : list[Page], f_str : str):
     outputs = []
     for p in pages:
@@ -64,13 +59,38 @@ def format_list(pages : list[Page], f_str : str):
         outputs.append(f_str.format_map(o))
     return outputs
 
+def generate_filter(filter_str : str, date_format = "b %d %Y %I:%M%p"):
+    tokens = filter_str.split()
+    tokens[2] = ' '.join(tokens[2:])
+
+    operator_map = {
+        '=': lambda a, b : a == b,
+        'has': lambda a, b : b in a,
+        '>': lambda a, b : a > b,
+        '<': lambda a, b : a < b,
+        '>=': lambda a, b : a >= b,
+        '<=': lambda a, b : a <= b
+    }
+    fn = operator_map[tokens[1]]
+
+    if tokens[0] in ("created_at", "modified_at"):
+        tokens[2] = datetime.strptime(tokens[2],date_format)
+
+    return lambda p : fn(p.__dict__[tokens[0]], tokens[2])
+
+def filter_pages(pages : list[Page], filters: list[Callable]):
+    out = pages
+    for f in filters:
+        out = list(filter(f, out))
+    return out
+
 def parse(query_str : str):
     # {LIST, TABLE, JSON, CSV} AS {txt, json, csv}
     # WHERE {condition}
     raise NotImplementedError()
 
 def main():
-    query(".")
+    index(".")
 
 if __name__ == "__main__":
     main()
