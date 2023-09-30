@@ -32,6 +32,8 @@ def cmd_list(args):
     filters = [zenkat.generate_filter(f) for f in filter_strs]
     pages = zenkat.index(args.path, exclude)
     filtered = zenkat.filter_pages(pages, filters)
+    if args.sort != None:
+        filtered = zenkat.sort_from_query(filtered, args.sort)
     ls = zenkat.format_list(filtered, f_str)
     for line in ls: print(line)
 
@@ -42,6 +44,7 @@ def main():
     parser.add_argument("-e","--exclude",action='append')
     parser.add_argument("--format", "-F")
     parser.add_argument("--filter", "-f", action="append")
+    parser.add_argument("--sort", '-s')
     args = parser.parse_args()
     
     if args.command == 'list':

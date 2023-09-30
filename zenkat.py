@@ -5,6 +5,8 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Callable
 import re
+from functools import cmp_to_key
+from operator import attrgetter
 
 @dataclass()
 class Page:
@@ -85,6 +87,24 @@ def filter_pages(pages : list[Page], filters: list[Callable]):
     for f in filters:
         out = list(filter(f, out))
     return out
+    
+def sort_from_query(pages: list[Page], sort_str : str):
+    tokens = sort_str.split()
+    if tokens[1] not in ('asc','desc'):
+        raise ValueError()
+
+    field = tokens[0]
+
+    def key_fn(p : Page):
+        attr = p.__dict__[field]
+        if isinstance(attr, str):
+            attr = attr.lower()
+        return attr
+
+    return sorted(pages, key=key_fn, reverse = (tokens[1] == 'desc'))
+
+def sort_pages(pages : list[Page], sort_fn: Callable):
+    return sorted(pages, key = sort_fn)
 
 def parse(query_str : str):
     # {LIST, TABLE, JSON, CSV} AS {txt, json, csv}
