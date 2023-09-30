@@ -22,6 +22,11 @@ ZenKat supports basic filtering and formatting of results based on the fields it
 zk list --filter "tags has todo" --format "{rel_path} {tags}"
 ```
 
+One of the most powerful features of ZenKat is the ability to calculate backlinks and resolve paths:
+```
+zk list --format "{title} [↓{in_link_count} ↑{out_link_count}] ({rel_path})" --sort "in_link_count asc"
+```
+
 It can correctly operate over dates using filters.
 
 ```
