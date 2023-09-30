@@ -2,7 +2,7 @@ from argparse import ArgumentParser
 from dataclasses import dataclass, field, asdict
 import os
 from datetime import datetime
-from pathlib import Path
+from pathlib import Path, PosixPath
 from typing import Any, Callable
 import re
 from functools import cmp_to_key
@@ -30,9 +30,21 @@ def get_wiki_links(document : str):
     matches = re.findall("(?:^|\s)\[\[([#\/\-\w\s]+)\]\]", document)
     # might want to resolve to an absolute path
     return set(matches)
+
+def resolve_links(links : list[str], path : Path):
+    out = []
+    for l in links:
+        matches = list(path.glob(f"{l}.*"))
+        if len(matches) > 0:
+            # ignores multiple matches rather than throwing error
+            out.append(str(matches[0].absolute()))
+    return out
     
 def index(path : str, exclude : list = []):
     pages = []
+
+    link_dests = dict()
+    
     for p in Path(path).rglob("*.md"):
         suffixes = set(p.suffixes)
         if len(suffixes.intersection(exclude)) > 0:
@@ -54,10 +66,23 @@ def index(path : str, exclude : list = []):
         )
         document = p.read_text()
         cur_page.tags = get_tags(document)
-        cur_page.out_links = get_wiki_links(document)
+        raw_links = get_wiki_links(document)
+        cur_page.out_links = resolve_links(raw_links, p.parent)
         cur_page.out_link_count = len(cur_page.out_links)
+        # add to absolute path dict
+        for l in cur_page.out_links:
+            if l not in link_dests:
+                link_dests[l] = []
+            link_dests[l].append(abs)
         
         pages.append(cur_page)
+
+    # calculate backlinks
+    for page in pages:
+        if page.abs_path in link_dests:
+            page.in_links = link_dests[page.abs_path]
+            page.in_link_count = len(link_dests[page.abs_path])
+    
     return pages
 
 def get_content(page : Page):
