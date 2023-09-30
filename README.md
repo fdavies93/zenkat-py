@@ -16,7 +16,7 @@ For viewing files as formatted you can use [MD Fileserver](https://github.com/co
 
 ## Usage
 
-ZenKat supports basic filtering and formatting of results based on the fields it indexes. At the moment it only outputs lists of pages. You can customise the output using `--format`. For example, with an alias of `zk`:
+ZenKat supports basic filtering and formatting of results based on the fields it indexes. At the moment it can output pages and current tags used across pages. You can customise the output using `--format`. For example, with an alias of `zk`:
 
 ```
 zk list --filter "tags has todo" --format "{rel_path} {tags}"
@@ -40,6 +40,13 @@ You can sort by fields using straightforward ascending / descending statements. 
 zk list --filter "rel_path has business" --sort "modified_at asc" --format "{modified_at} {filename}"
 ```
 
+You can get a simple list of tags and then find which pages have those tags:
+
+```
+zk tags
+zk list --filter "tags has personal"
+```
+
 ### Fields
 
 ```
@@ -49,8 +56,10 @@ rel_path: str
 created_at: datetime
 modified_at: datetime
 tags: set[str]
-metadata: dict[str, Any]
-links: set[str]
+out_links: set[str]
+out_link_count: int
+in_links: set[str]
+in_link_count: int
 ```
 
 ### Filters
