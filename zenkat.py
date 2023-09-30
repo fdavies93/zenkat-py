@@ -38,7 +38,7 @@ def index(path : str, exclude : list = []):
         cur_page = Page(
             p.name,
             abs,
-            p.relative_to(path),
+            str(p.relative_to(path)),
             datetime.fromtimestamp(os.path.getctime(abs)),
             datetime.fromtimestamp(os.path.getmtime(abs))
         )
