@@ -23,7 +23,7 @@ def cmd_list(args):
     exclude = []
     if args.exclude != None:
         exclude = args.exclude
-    f_str = "{filename} ({path})"
+    f_str = "{filename} ({rel_path})"
     if args.format != None:
         f_str = args.format
     filter_strs = []

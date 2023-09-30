@@ -9,7 +9,8 @@ import re
 @dataclass()
 class Page:
     filename: str
-    path: str
+    abs_path: str
+    rel_path: str
     created_at: datetime
     modified_at: datetime
     tags: set[str] = field(default_factory=set)
@@ -37,6 +38,7 @@ def index(path : str, exclude : list = []):
         cur_page = Page(
             p.name,
             abs,
+            p.relative_to(path),
             datetime.fromtimestamp(os.path.getctime(abs)),
             datetime.fromtimestamp(os.path.getmtime(abs))
         )
@@ -48,7 +50,7 @@ def index(path : str, exclude : list = []):
     return pages
 
 def get_content(page : Page):
-    with open(page.path, 'r') as f:
+    with open(page.abs_path, 'r') as f:
         content = f.read()
     return content
 
