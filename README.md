@@ -34,6 +34,12 @@ You can also combine multiple filters, which will act like an AND statement.
 zk list --filter "rel_path has business" --filter "rel_path has Client"
 ```
 
+You can sort by fields using straightforward ascending / descending statements. Note that you can only sort on one field at the moment.
+
+```
+zk list --filter "rel_path has business" --sort "modified_at asc" --format "{modified_at} {filename}"
+```
+
 ### Fields
 
 ```
@@ -65,4 +71,13 @@ Operations currently supported are:
 >=
 <=
 has (opposite of in, works on sets, strings, and dicts)
+```
+
+### Sorting
+
+You can sort by any non-compound field using the following syntax:
+
+```
+<FIELD> {asc / desc}
+modified_at asc
 ```
