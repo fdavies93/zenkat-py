@@ -9,6 +9,8 @@
   - kanban (from doc outline?)
 - Parse YAML metadata
 - Combine output, filter, sort syntax into query language
+  - Improve parsing of filters
+  - Improve sort parsing
 - Include deeper searching of documents
   - Extract tasks / lists and display metadata
   - Document structure in headings
@@ -16,5 +18,3 @@
 - Add bookmark utility
 
 # Todo
-- Make links resolve to backlinks
-- Include link count in object data
