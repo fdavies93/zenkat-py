@@ -59,7 +59,7 @@ def format_list(pages : list[Page], f_str : str):
         outputs.append(f_str.format_map(o))
     return outputs
 
-def generate_filter(filter_str : str, date_format = "b %d %Y %I:%M%p"):
+def generate_filter(filter_str : str, date_format = "%b %d %Y %I:%M%p"):
     tokens = filter_str.split()
     tokens[2] = ' '.join(tokens[2:])
 
