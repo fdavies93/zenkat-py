@@ -1,4 +1,4 @@
-from . import zenkat
+import zenkat
 import argparse
 import sys
 
