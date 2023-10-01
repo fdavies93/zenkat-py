@@ -1,4 +1,4 @@
-from . import zenkat
+import zenkat
 import argparse
 import sys
 
@@ -25,14 +25,14 @@ def cmd_tags(args):
 
 def cmd_list(args):
     pages = get_pages(args)
-    f_str = "{title} [↓{in_link_count} ↑{out_link_count}] ({rel_path})"
+    f_str = "[↓{in_link_count} ↑{out_link_count}] {title} ({rel_path})"
     if args.format != None:
         f_str = args.format
     ls = zenkat.format_list(pages, f_str)
     for line in ls: print(line)
 
 def main():
-    parser = argparse.ArgumentParser(prog="zk", description="Zenkat: Library and CLI to use plain markdown files as a Zettelkasten knowledge store.")
+    parser = argparse.ArgumentParser(prog="zenkat", description="Zenkat: Library and CLI to use plain markdown files as a Zettelkasten knowledge store.")
     parser.add_argument('command', choices=['list', 'tags'])
     parser.add_argument('--path', nargs='?', const='.', type=str, default='.')
     parser.add_argument("-e","--exclude",action='append')

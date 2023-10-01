@@ -8,17 +8,27 @@ I've used a number of knowledge management tools including Obsidian, Notion, and
 
 It's named this way because of my bad memory for German. I remembered ZEttelKAsTen as ZenKat (unclear where the N came from).
 
+![](images/zk-0-0-9-demo.gif)
+
 ## Recommended Setup
 
-Zenkat has no dependencies beyond the Python standard library and can be [installed from PyPi](https://pypi.org/project/zenkat/). It also installs the zk convenience script.
+Zenkat has no dependencies beyond the Python standard library and can be [installed from PyPi](https://pypi.org/project/zenkat/). It also installs the zenkat convenience script (renamed from zk).
 
 ```
 pip install zenkat
 ```
 
+If you'd rather run directly from source, clone this repo to the folder of your choice, then add the following line to your .bashrc or .zshrc:
+
+```
+alias zk="python3 ~/zk/src/zenkat"
+```
+
+To avoid conflicts with [the other zk]( https://github.com/mickael-menu/zk ) you can instead alias to `zenkat`.
+
 It's also worth installing [Marksman LSP](https://github.com/artempyanykh/marksman) if you plan on working with plaintext files a lot. This should work with major CLI editors including Helix, Neovim, and Spacemacs, as well as KATE. I use Helix.
 
-For viewing files as formatted you can use [MD Fileserver](https://github.com/commenthol/md-fileserver).
+For viewing files as formatted you can use [MD Fileserver]( https://github.com/commenthol/md-fileserver ) with `mdstart`.
 
 `diff` comes by default on the command line and can be extremely helpful when combining duplicate notes (which Obsidian's multiple vaults tend to lead to).
 
