@@ -20,7 +20,13 @@
   - vim / neovim
   - emacs / spacemacs / etc
   - VSCode (?!)
+- Allow different date formats in queries
+- Add proper link resolution in a variety of formats
+- Support regular internal / outbound links
+- Make tags searchable like pages
+  - Change command syntax to e.g. `zk list pages` or `zk list tags`
 
 # Todo
+- Enhance default format for list
 - Add example vault to repo
 - Add screencap to README

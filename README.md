@@ -20,6 +20,8 @@ It's also worth installing [Marksman LSP](https://github.com/artempyanykh/marksm
 
 For viewing files as formatted you can use [MD Fileserver](https://github.com/commenthol/md-fileserver).
 
+`diff` comes by default on the command line and can be extremely helpful when combining duplicate notes (which Obsidian's multiple vaults tend to lead to).
+
 ## Usage
 
 ZenKat supports basic filtering, formatting, and sorting of results based on the fields it indexes. At the moment it can output pages and current tags used across pages. You can customise the output using `--format`.
