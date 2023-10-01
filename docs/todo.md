@@ -22,4 +22,5 @@
   - VSCode (?!)
 
 # Todo
+- Add example vault to repo
 - Add screencap to README
