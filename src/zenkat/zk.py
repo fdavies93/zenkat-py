@@ -25,7 +25,7 @@ def cmd_tags(args):
 
 def cmd_list(args):
     pages = get_pages(args)
-    f_str = "{title} [↓{in_link_count} ↑{out_link_count}] ({rel_path})"
+    f_str = "[↓{in_link_count} ↑{out_link_count}] {title} ({rel_path})"
     if args.format != None:
         f_str = args.format
     ls = zenkat.format_list(pages, f_str)
