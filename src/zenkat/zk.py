@@ -9,9 +9,9 @@ def get_pages(args):
     filter_strs = []
     if args.filter != None:
         filter_strs = args.filter
-    filters = [zenkat.generate_filter(f) for f in filter_strs]
+    filters = [zenkat.generate_filter(f, zenkat.Page) for f in filter_strs]
     pages = zenkat.index(args.path, exclude)
-    filtered = zenkat.filter_pages(pages, filters)
+    filtered = zenkat.filter_objs(pages, filters)
     if args.sort != None:
         filtered = zenkat.sort_from_query(filtered, args.sort)
     return filtered

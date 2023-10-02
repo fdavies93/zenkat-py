@@ -1,12 +1,13 @@
 from argparse import ArgumentParser
-from dataclasses import dataclass, field, asdict
+from dataclasses import dataclass, field, asdict, fields
 import os
 from datetime import datetime
 from pathlib import Path, PosixPath
-from typing import Any, Callable
+from typing import Any, Callable, Union
 import re
 from functools import cmp_to_key
 from operator import attrgetter
+import dateutil.parser
 
 @dataclass()
 class Page:
@@ -21,6 +22,23 @@ class Page:
     out_link_count: int = 0
     in_links: set[str] = field(default_factory=set)
     in_link_count: int = 0
+
+@dataclass()
+class Tag:
+    name: str
+    count: int
+    docs: set[str] = field(default_factory=set)
+
+@dataclass()
+class Link:
+    '''
+    Links don't really make sense outside of the context of a document. 
+    '''
+    doc_abs_path: str
+    text: str
+    index: int
+    href: str
+    href_resolved: str
     
 def get_tags(document: str):
     matches = re.findall("(?:^|\s)#([-_\w\d]+)",document)
@@ -97,8 +115,13 @@ def format_list(pages : list[Page], f_str : str):
         outputs.append(f_str.format_map(o))
     return outputs
 
-def generate_filter(filter_str : str, date_format = "%b %d %Y %I:%M%p"):
+def convert_date_str(date_str : str):
+    return dateutil.parser.parse(date_str)
+
+def generate_filter(filter_str : str, data_type):
     tokens = filter_str.split()
+    field_name = tokens[0]
+    operator = tokens[1]
     tokens[2] = ' '.join(tokens[2:])
 
     operator_map = {
@@ -111,33 +134,43 @@ def generate_filter(filter_str : str, date_format = "%b %d %Y %I:%M%p"):
     }
     fn = operator_map[tokens[1]]
 
-    if tokens[0] in ("created_at", "modified_at"):
-        tokens[2] = datetime.strptime(tokens[2],date_format)
-    elif tokens[0] in ("out_link_count", "in_link_count"):
+    fs = fields(data_type)
+    
+    columns = [f for f in fs if f.name == field_name]
+    if len(columns) == 0: raise ValueError()
+    field_obj = columns[0]
+
+    if field_obj.type == datetime:
+        if operator == 'has': raise ValueError()
+        tokens[2] = convert_date_str(tokens[2])
+    elif field_obj.type == int:
+        if operator == 'has': raise ValueError() 
         tokens[2] = int(tokens[2])
+    elif field_obj.type == set:
+        if operator != 'has': raise ValueError()
 
     return lambda p : fn(p.__dict__[tokens[0]], tokens[2])
 
-def filter_pages(pages : list[Page], filters: list[Callable]):
-    out = pages
+def filter_objs(objs : list[Union[Page,Tag]], filters: list[Callable]):
+    out = objs
     for f in filters:
         out = list(filter(f, out))
     return out
     
-def sort_from_query(pages: list[Page], sort_str : str):
+def sort_from_query(objs: list[Union[Page,Tag]], sort_str : str):
     tokens = sort_str.split()
     if tokens[1] not in ('asc','desc'):
         raise ValueError()
 
     field = tokens[0]
 
-    def key_fn(p : Page):
-        attr = p.__dict__[field]
+    def key_fn(o : Union[Page,Tag]):
+        attr = o.__dict__[field]
         if isinstance(attr, str):
             attr = attr.lower()
         return attr
 
-    return sorted(pages, key=key_fn, reverse = (tokens[1] == 'desc'))
+    return sorted(objs, key=key_fn, reverse = (tokens[1] == 'desc'))
 
 def sort_pages(pages : list[Page], sort_fn: Callable):
     return sorted(pages, key = sort_fn)
