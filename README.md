@@ -4,7 +4,7 @@
 
 ZenKat is a tool and library to enable using a set of plaintext files, especially markdown files, as a [Zettelkasten](https://en.wikipedia.org/wiki/Zettelkasten) knowledge base.
 
-I've used a number of knowledge management tools including Obsidian, Notion, and Coda, and have found them all lacking and / or designed in a way that makes them act as a walled garden. ZenKat is an attempt to create a lightweight FOSS alternative for command-line users.
+I've used a number of knowledge management tools including Obsidian, Notion, and Coda, and have found them all lacking and / or designed in a way that makes them act as a walled garden. ZenKat is an attempt to create a lightweight FOSS alternative for command-line users. As such it aims to have few dependencies while still providing decent features.
 
 It's named this way because of my bad memory for German. I remembered ZEttelKAsTen as ZenKat (unclear where the N came from).
 
@@ -12,11 +12,13 @@ It's named this way because of my bad memory for German. I remembered ZEttelKAsT
 
 ## Recommended Setup
 
-Zenkat has no dependencies beyond the Python standard library and can be [installed from PyPi](https://pypi.org/project/zenkat/). It also installs the zenkat convenience script (renamed from zk).
+You can install directly from pip:
 
 ```
 pip install zenkat
 ```
+
+This also installs the `zenkat` convenience script.
 
 If you'd like to run directly from source you can clone the repository and use [development mode](https://setuptools.pypa.io/en/latest/userguide/development_mode.html).
 

@@ -34,25 +34,41 @@ class Link:
     '''
     Links don't really make sense outside of the context of a document. 
     '''
-    doc_abs_path: str
     text: str
-    index: int
     href: str
-    href_resolved: str
+    href_resolved: str = ""
+    doc_abs_path: str = ""
     
 def get_tags(document: str):
     matches = re.findall("(?:^|\s)#([-_\w\d]+)",document)
     return set(matches)
 
-def get_wiki_links(document : str):
+def get_wiki_links(document : str) -> list[Link]:
     matches = re.findall("(?:^|\s)\[\[([#\/\-\w\s]+)\]\]", document)
-    # might want to resolve to an absolute path
-    return set(matches)
+    # in wiki-links, text and href are always the same
+    links = [ Link(m,m) for m in matches ]
+    return links
 
-def resolve_links(links : list[str], path : Path):
+def get_regular_links(document: str) -> list[Link]:
+    # captures links in format (text, url)
+    # if you use the more involved .search process you can get index too :think:
+    matches = re.findall("(?:^|\s)\[(.+)\]\(([\w\s/:#\-_]+)\)", document)
+    links = [ Link(m[0], m[1]) for m in matches ]
+    return links
+
+def get_all_links(document: str):
+    all_links = []
+    all_links.extend(get_wiki_links(document))
+    all_links.extend(get_regular_links(document))
+    return all_links
+    
+
+def resolve_links(links : list[Link], path : Path):
     out = []
     for l in links:
-        matches = list(path.glob(f"{l}.*"))
+        # probably need to check if it's a uri or a local link
+        # uri cannot be resolved
+        matches = list(path.glob(f"{l.href}.*"))
         if len(matches) > 0:
             # ignores multiple matches rather than throwing error
             out.append(str(matches[0].absolute()))
@@ -84,8 +100,10 @@ def index(path : str, exclude : list = []):
         )
         document = p.read_text()
         cur_page.tags = get_tags(document)
-        raw_links = get_wiki_links(document)
-        cur_page.out_links = resolve_links(raw_links, p.parent)
+
+        links = get_all_links(document)
+        # need to change how this works to more of an enrich link
+        cur_page.out_links = resolve_links(links, p.parent)
         cur_page.out_link_count = len(cur_page.out_links)
         # add to absolute path dict
         for l in cur_page.out_links:

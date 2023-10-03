@@ -4,6 +4,10 @@
 
 This is an example card file which is designed to show some of the features of ZenKat (including planned future features). It can also be seen as a collection of tips for organising a plaintext Zennkasten from my own experience.
 
+## Links
+
+zenkat now supports [normal markdown links](notes/chapter-1) and wiki-style links like [[notes/chapter-1]].
+
 ## Current Todos
 
 Todos aren't treated in a special way yet, but they might be in the future.
