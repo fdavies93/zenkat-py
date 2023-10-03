@@ -9,19 +9,6 @@ from functools import cmp_to_key
 from operator import attrgetter
 import dateutil.parser
 
-@dataclass()
-class Page:
-    title: str
-    filename: str
-    abs_path: str
-    rel_path: str
-    created_at: datetime
-    modified_at: datetime
-    tags: set[str] = field(default_factory=set)
-    out_links: set[str] = field(default_factory=set)
-    out_link_count: int = 0
-    in_links: set[str] = field(default_factory=set)
-    in_link_count: int = 0
 
 @dataclass()
 class Tag:
@@ -38,7 +25,28 @@ class Link:
     href: str
     href_resolved: str = ""
     doc_abs_path: str = ""
+    type: str = ""
     
+@dataclass()
+class Page:
+    title: str
+    filename: str
+    abs_path: str
+    rel_path: str
+    created_at: datetime
+    modified_at: datetime
+    tags: set[str] = field(default_factory=set)
+    out_links: list[Link] = field(default_factory=list)
+    out_link_count: int = 0
+    in_links: list[Link] = field(default_factory=list)
+    in_link_count: int = 0
+
+@dataclass
+class Index:
+    pages: list[Page]
+    tags: list[Tag]
+    links: list[Link]
+
 def get_tags(document: str):
     matches = re.findall("(?:^|\s)#([-_\w\d]+)",document)
     return set(matches)
@@ -46,14 +54,14 @@ def get_tags(document: str):
 def get_wiki_links(document : str) -> list[Link]:
     matches = re.findall("(?:^|\s)\[\[([#\/\-\w\s]+)\]\]", document)
     # in wiki-links, text and href are always the same
-    links = [ Link(m,m) for m in matches ]
+    links = [ Link(m,m,type="wiki") for m in matches ]
     return links
 
 def get_regular_links(document: str) -> list[Link]:
     # captures links in format (text, url)
     # if you use the more involved .search process you can get index too :think:
-    matches = re.findall("(?:^|\s)\[(.+)\]\(([\w\s/:#\-_]+)\)", document)
-    links = [ Link(m[0], m[1]) for m in matches ]
+    matches = re.findall("(?:^|\s)\[(.+)\]\(([\w\s/:#\-_.]+)\)", document)
+    links = [ Link(m[0], m[1], type="regular") for m in matches ]
     return links
 
 def get_all_links(document: str):
@@ -71,13 +79,23 @@ def resolve_links(links : list[Link], path : Path):
         matches = list(path.glob(f"{l.href}.*"))
         if len(matches) > 0:
             # ignores multiple matches rather than throwing error
-            out.append(str(matches[0].absolute()))
+            out.append(Link(
+                text = l.text,
+                href = l.href,
+                doc_abs_path = l.doc_abs_path,
+                href_resolved = str(matches[0].resolve()),
+                type = l.type
+            ))
+
     return out
     
 def index(path : str, exclude : list = []):
-    pages = []
-
-    link_dests = dict()
+    
+    pages: list[Page] = []
+    links_out: list[Link] = []
+    tags: list[Tag] = []
+    
+    link_dests: dict[str,list[Link]] = dict()
     
     for p in Path(path).rglob("*.md"):
         suffixes = set(p.suffixes)
@@ -86,9 +104,9 @@ def index(path : str, exclude : list = []):
         
         abs = str(p.absolute())
 
-        title = p
-        while title.suffix: title = title.with_suffix("")
-        title = title.name
+        path_obj = p
+        while path_obj.suffix: path_obj = path_obj.with_suffix("")
+        title = path_obj.name
         
         cur_page = Page(
             title,
@@ -102,14 +120,16 @@ def index(path : str, exclude : list = []):
         cur_page.tags = get_tags(document)
 
         links = get_all_links(document)
+        for l in links: l.doc_abs_path = str(p.absolute())
         # need to change how this works to more of an enrich link
         cur_page.out_links = resolve_links(links, p.parent)
+        links_out.extend(cur_page.out_links)
         cur_page.out_link_count = len(cur_page.out_links)
         # add to absolute path dict
         for l in cur_page.out_links:
-            if l not in link_dests:
-                link_dests[l] = []
-            link_dests[l].append(abs)
+            if l.href_resolved not in link_dests:
+                link_dests[l.href_resolved] = []
+            link_dests[l.href_resolved].append(l)
         
         pages.append(cur_page)
 
@@ -119,7 +139,7 @@ def index(path : str, exclude : list = []):
             page.in_links = link_dests[page.abs_path]
             page.in_link_count = len(link_dests[page.abs_path])
     
-    return pages
+    return Index(pages, tags, links_out)
 
 def get_content(page : Page):
     with open(page.abs_path, 'r') as f:

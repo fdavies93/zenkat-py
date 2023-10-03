@@ -5,6 +5,8 @@ author: "Frank"
 
 #writing #creative-writing #novel
 
+[Return to Index](../index)
+
 This note is a helpful reference for looking at syntax of complex documents.
 
 # Chapter 1 of My Awesome Novel
