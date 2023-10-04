@@ -12,14 +12,17 @@ import dateutil.parser
 
 @dataclass()
 class Tag:
+    '''
+    Metadata about a tag, including which pages it appears in as absolute (resolved) paths.
+    '''
     name: str
-    count: int
+    count: int = 0
     docs: set[str] = field(default_factory=set)
 
 @dataclass()
 class Link:
     '''
-    Links don't really make sense outside of the context of a document. 
+    A link from one page to another page or to an external uri.
     '''
     text: str
     href: str
@@ -29,13 +32,16 @@ class Link:
     
 @dataclass()
 class Page:
+    '''
+    Metadata about a single text file.
+    '''
     title: str
     filename: str
     abs_path: str
     rel_path: str
     created_at: datetime
     modified_at: datetime
-    tags: set[str] = field(default_factory=set)
+    tags: list[Tag] = field(default_factory=list)
     out_links: list[Link] = field(default_factory=list)
     out_link_count: int = 0
     in_links: list[Link] = field(default_factory=list)
@@ -43,12 +49,15 @@ class Page:
 
 @dataclass
 class Index:
+    '''
+    Object containing all other types of document.
+    '''
     pages: list[Page]
     tags: list[Tag]
     links: list[Link]
 
 def get_tags(document: str):
-    matches = re.findall("(?:^|\s)#([-_\w\d]+)",document)
+    matches = re.findall("(?:^|\s)#([-_\w\d]+)",document)        
     return set(matches)
 
 def get_wiki_links(document : str) -> list[Link]:
@@ -94,8 +103,10 @@ def index(path : str, exclude : list = []):
     pages: list[Page] = []
     links_out: list[Link] = []
     tags: list[Tag] = []
-    
+
+    page_paths: dict[str, Page] = dict()
     link_dests: dict[str,list[Link]] = dict()
+    tag_names: dict[str, Tag] = dict()
     
     for p in Path(path).rglob("*.md"):
         suffixes = set(p.suffixes)
@@ -117,7 +128,6 @@ def index(path : str, exclude : list = []):
             datetime.fromtimestamp(os.path.getmtime(abs))
         )
         document = p.read_text()
-        cur_page.tags = get_tags(document)
 
         links = get_all_links(document)
         for l in links: l.doc_abs_path = str(p.absolute())
@@ -130,15 +140,30 @@ def index(path : str, exclude : list = []):
             if l.href_resolved not in link_dests:
                 link_dests[l.href_resolved] = []
             link_dests[l.href_resolved].append(l)
-        
+
+        for tag in get_tags(document):
+            if tag_names.get(tag) == None:
+                tag_names[tag] = Tag(tag)
+            tag_names[tag].docs.add(abs)
+            tag_names[tag].count += 1
+
+        page_paths[cur_page.abs_path] = cur_page
         pages.append(cur_page)
 
-    # calculate backlinks
-    for page in pages:
-        if page.abs_path in link_dests:
-            page.in_links = link_dests[page.abs_path]
-            page.in_link_count = len(link_dests[page.abs_path])
+    # append tags to pages
+    for tag_name, tag_obj in tag_names.items():
+        pages_w_tag = tag_obj.docs.union(page_paths.keys())
+        for page_path in pages_w_tag:
+            page_paths[page_path].tags.append(tag_obj)
     
+    # calculate backlinks
+    for link_dest, link_obj in link_dests.items():
+        if link_dest not in page_paths: continue
+        page_paths[link_dest].in_links = link_obj
+        page_paths[link_dest].in_link_count = len(link_obj)
+
+    tags = [t for t in tag_names.values()]
+            
     return Index(pages, tags, links_out)
 
 def get_content(page : Page):
