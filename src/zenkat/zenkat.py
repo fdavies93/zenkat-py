@@ -46,6 +46,7 @@ class Page:
     out_link_count: int = 0
     in_links: list[Link] = field(default_factory=list)
     in_link_count: int = 0
+    word_count: int = 0
 
 @dataclass
 class Index:
@@ -79,6 +80,9 @@ def get_all_links(document: str):
     all_links.extend(get_regular_links(document))
     return all_links
     
+def get_word_count(document: str):
+    words = document.split()
+    return len(words)
 
 def resolve_links(links : list[Link], path : Path):
     out = []
@@ -103,7 +107,6 @@ def index(path : str, exclude : list = []):
     pages: list[Page] = []
     links_out: list[Link] = []
     tags: list[Tag] = []
-
     page_paths: dict[str, Page] = dict()
     link_dests: dict[str,list[Link]] = dict()
     tag_names: dict[str, Tag] = dict()
@@ -135,6 +138,7 @@ def index(path : str, exclude : list = []):
         cur_page.out_links = resolve_links(links, p.parent)
         links_out.extend(cur_page.out_links)
         cur_page.out_link_count = len(cur_page.out_links)
+        cur_page.word_count = get_word_count(document)
         # add to absolute path dict
         for l in cur_page.out_links:
             if l.href_resolved not in link_dests:
