@@ -157,7 +157,7 @@ def index(path : str, exclude : list = []):
 
     # append tags to pages
     for tag_name, tag_obj in tag_names.items():
-        pages_w_tag = tag_obj.docs.union(page_paths.keys())
+        pages_w_tag = tag_obj.docs.intersection(page_paths.keys())
         for page_path in pages_w_tag:
             page_paths[page_path].tags.append(tag_obj)
     
@@ -190,8 +190,9 @@ def convert_input_to_field(data_type, input_str: str, field_name: str):
     '''
     Given a data_type, which must be a dataclass instance or class, convert the input str to be the same type as the field designated by name
     ''' 
-    
+
     fs = fields(data_type)
+
     
     columns = [f for f in fs if f.name == field_name]
     if len(columns) == 0: raise ValueError()

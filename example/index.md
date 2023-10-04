@@ -8,6 +8,11 @@ This is an example card file which is designed to show some of the features of Z
 
 zenkat now supports [normal markdown links](notes/chapter-1) and wiki-style links like [[notes/chapter-1]]. However, it requires a correct relative path to do so.
 
+You can make a list of links:
+- [Daily 1](notes/daily_1)
+- [Daily 2](notes/daily_2)
+- [Daily 3](notes/daily_3)
+
 ## Current Todos
 
 Todos aren't treated in a special way yet, but they might be in the future.
