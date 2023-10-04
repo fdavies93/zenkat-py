@@ -7,6 +7,7 @@ from typing import Any, Callable, Union
 import re
 from functools import cmp_to_key
 from operator import attrgetter
+from typing import Iterable
 import dateutil.parser
 
 
@@ -185,9 +186,39 @@ def format_list(pages : list[Page], f_str : str):
 def convert_date_str(date_str : str):
     return dateutil.parser.parse(date_str)
 
+def convert_input_to_field(data_type, input_str: str, field_name: str):
+    '''
+    Given a data_type, which must be a dataclass instance or class, convert the input str to be the same type as the field designated by name
+    ''' 
+    
+    fs = fields(data_type)
+    
+    columns = [f for f in fs if f.name == field_name]
+    if len(columns) == 0: raise ValueError()
+    field_obj = columns[0]
+
+    if field_obj.type == datetime:
+        output = convert_date_str(input_str)
+    elif field_obj.type == int:
+        output = int(input_str)
+    elif field_obj.type == str:
+        output = input_str
+    else:
+        raise NotImplementedError()
+    return output
+        
+
 def generate_filter(filter_str : str, data_type):
     tokens = filter_str.split()
     field_name = tokens[0]
+
+    split_field = field_name.split(".")
+
+    # this is kinda turning into a parser
+    if len(split_field) > 1:
+        field_name = split_field[0]
+        subfield_name = split_field[1]
+    
     operator = tokens[1]
     tokens[2] = ' '.join(tokens[2:])
 
@@ -201,21 +232,19 @@ def generate_filter(filter_str : str, data_type):
     }
     fn = operator_map[tokens[1]]
 
-    fs = fields(data_type)
-    
-    columns = [f for f in fs if f.name == field_name]
-    if len(columns) == 0: raise ValueError()
-    field_obj = columns[0]
+    if len(split_field) > 1:
+        def search_iter(p):
+            iterable = p.__dict__[field_name]
+            for el in iterable:
+                compare_to = convert_input_to_field(el, tokens[2], subfield_name)
+                # convert tokens[2] based on type of subfield
+                subfield = el.__dict__[subfield_name]
+                if el.__dict__[subfield_name] == tokens[2]:
+                    return True
+            return False
+        return search_iter
 
-    if field_obj.type == datetime:
-        if operator == 'has': raise ValueError()
-        tokens[2] = convert_date_str(tokens[2])
-    elif field_obj.type == int:
-        if operator == 'has': raise ValueError() 
-        tokens[2] = int(tokens[2])
-    elif field_obj.type == set:
-        if operator != 'has': raise ValueError()
-
+    compare_to = convert_input_to_field(data_type, tokens[2], field_name)
     return lambda p : fn(p.__dict__[tokens[0]], tokens[2])
 
 def filter_objs(objs : list[Union[Page,Tag]], filters: list[Callable]):
