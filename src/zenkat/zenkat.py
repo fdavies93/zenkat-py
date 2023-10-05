@@ -240,7 +240,7 @@ def generate_filter(filter_str : str, data_type):
                 compare_to = convert_input_to_field(el, tokens[2], subfield_name)
                 # convert tokens[2] based on type of subfield
                 subfield = el.__dict__[subfield_name]
-                if el.__dict__[subfield_name] == tokens[2]:
+                if fn(el.__dict__[subfield_name], compare_to):
                     return True
             return False
         return search_iter
