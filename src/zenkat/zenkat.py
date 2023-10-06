@@ -176,12 +176,6 @@ def get_content(page : Page):
         content = f.read()
     return content
 
-def format_list(pages : list[Page], f_str : str):
-    outputs = []
-    for p in pages:
-        o = asdict(p)
-        outputs.append(f_str.format_map(o))
-    return outputs
 
 def convert_date_str(date_str : str):
     return dateutil.parser.parse(date_str)
@@ -216,6 +210,19 @@ def get_field_fn(obj, field_name: str):
         map_fn = lambda o: get_field_fn(o, ".".join(parts[1:]))
         field = list(map(map_fn, field))
     return field
+
+def format_list(objs : list[Any], f_str : str):
+    outputs = []
+    pattern = "{([\w.]+)}"    
+    for o in objs:
+        templates = re.findall(pattern, f_str)
+        replacements = [get_field_fn(o,t) for t in templates]
+        cur_str = f_str
+        for i, r in enumerate(replacements):
+            cur_str = re.sub(pattern, str(r), cur_str, count=1)
+        outputs.append(cur_str)
+        
+    return outputs
 
 def get_operator(op_str):
     operator_map = {
