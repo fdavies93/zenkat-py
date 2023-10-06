@@ -44,7 +44,7 @@ def cmd_list(args):
     if args.filter != None:
         filter_strs = args.filter
 
-    filters = [zenkat.generate_filter(f, data[0]) for f in filter_strs]
+    filters = [zenkat.parse_filter(f, data[0]) for f in filter_strs]
 
     filtered = zenkat.filter_objs(data, filters)
     

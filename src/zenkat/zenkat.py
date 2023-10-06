@@ -207,7 +207,70 @@ def convert_input_to_field(data_type, input_str: str, field_name: str):
     else:
         raise NotImplementedError()
     return output
+
+def get_field_fn(obj, field_name: str):
+    parts = field_name.split(".")
+    cur_part = parts[0]
+    field = obj.__dict__[cur_part] # note this only works on objs
+    if len(parts) > 1:
+        map_fn = lambda o: get_field_fn(o, ".".join(parts[1:]))
+        field = list(map(map_fn, field))
+    return field
+
+def get_operator(op_str):
+    operator_map = {
+        '=': lambda a, b : a == b,
+        'has': lambda a, b : b in a,
+        '>': lambda a, b : a > b,
+        '<': lambda a, b : a < b,
+        '>=': lambda a, b : a >= b,
+        '<=': lambda a, b : a <= b
+    }
+    return operator_map[op_str]
+
+def convert_to_type(input_str, type_info):
+    if type_info == datetime:
+        output = convert_date_str(input_str)
+    elif type_info == int:
+        output = int(input_str)
+    elif type_info == str:
+        output = input_str
+    else:
+        output = input_str # sets could potentially use a lisp        
+    return output
+
+def parse_filter(filter_str: str, data_type):
+    tokens = filter_str.split() # 'lexing' the filter
+    
+    set_transform = None
+    if tokens[0] in ("any","all"):
+        set_transform = tokens[0]
+        tokens = tokens[1:]
+
+    # get fields from object
+    field_specifier = tokens[0]
+
+    operation = get_operator(tokens[1])
+
+    def filter_fn(o):
+        # get field values
+        field = get_field_fn(o, field_specifier)
+        # convert comparator to correct type based on field
+        comparator = convert_to_type(tokens[2], type(field))
+        # get operation
+        my_op = operation
         
+        if set_transform is not None:
+            truth_vals = [my_op(f,comparator) for f in field]
+            if len(truth_vals) == 0: return False
+            if set_transform == "any": result = any(truth_vals)
+            elif set_transform == "all": result = all(truth_vals)
+            return result
+
+        result = my_op(field, comparator)
+        return result
+
+    return filter_fn
 
 def generate_filter(filter_str : str, data_type):
     tokens = filter_str.split()
@@ -233,7 +296,7 @@ def generate_filter(filter_str : str, data_type):
     }
     fn = operator_map[tokens[1]]
 
-    if len(split_field) > 1:
+    if len(split_field) > 1: # too crude
         def search_iter(p):
             iterable = p.__dict__[field_name]
             for el in iterable:
