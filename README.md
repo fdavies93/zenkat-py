@@ -70,27 +70,75 @@ zenkat list pages --filter "any tags.name = daily"
 
 #### Pages
 ```
-
+title: str # filename without extensions
+filename: str
+abs_path: str
+rel_path: str
+created_at: datetime
+modified_at: datetime
+tags: list[Tag]
+out_links: list[Link] # external links are not indexed for now
+out_link_count: int
+in_links: list[Link]
+in_link_count: int
+word_count: int
 ```
 
 #### Tags
+
 ```
-
-
+name: str
+count: int
+docs: str[str] # absolute paths of source documents
 ```
 
 #### Links
+
+```
+text: str
+href: str # the exact text of the link
+href_resolved: str
+doc_abs_path: str
+type: str # wiki or regular
 ```
 
+### Formatting
+
+You can format the output of zenkat by using a format string in Python format. Note that this no longer uses `.format()` but instead uses regexps to support subfields.
+
+```
+zenkat list pages --format "[↓{in_link_count} ↑{out_link_count}] {title}, {word_count} words ({rel_path})"
+
+zenkat list links --format "{doc_abs_path} → {href_resolved}"
+```
+
+As of v0.0.10 formatting can make use of subfields of pages correctly.
+
+```
+zenkat list pages --format "{title} {rel_path} {out_links.text} {in_links.doc_abs_path}"
 ```
 
 ### Filters
 
-Currently filters use a basic 3-token structure, separated by spaces. The last argument can be multiple words long. The format of filters is:
+Currently filters use a basic token structure, separated by spaces. The last argument can be multiple words long. The format of filters is:
 
 ```
-rel_path has college stuff
-<FIELD> <OPERATION> <VALUE>
+any tags.name = writing
+[all | any] field[.subfield*] operation value
+```
+
+Subfields become lists which can be queried by using the `any` and `all` keywords. (Effectively, the `.` is a map command).
+
+```
+any tags.name = writing
+```
+
+As of v0.0.10 `dateutil` is used to parse dates, meaning most date strings will work as expected.
+
+```
+created_at < 2023-10
+created_at > Jun 2023
+created_at > September 10, 2023
 ```
 
 Operations currently supported are:
