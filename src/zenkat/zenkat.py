@@ -259,6 +259,8 @@ def parse_filter(filter_str: str, data_type):
 
     operation = get_operator(tokens[1])
 
+    tokens[2] = " ".join(tokens[2:])
+
     def filter_fn(o):
         # get field values
         field = get_field_fn(o, field_specifier)

@@ -30,56 +30,58 @@ For viewing files as formatted you can use [MD Fileserver]( https://github.com/c
 
 ## Usage
 
-ZenKat supports basic filtering, formatting, and sorting of results based on the fields it indexes. At the moment it can output pages and current tags used across pages. You can customise the output using `--format`.
+ZenKat supports basic filtering, formatting, and sorting of results based on the fields it indexes. As of version v0.0.10 it indexes documents, links, and tags and can recursively access properties. You can customise the output using `--format`.
 
 ```
-zk list --filter "tags has todo" --format "{rel_path} {tags}"
+zenkat list pages --filter "tags.name has writing" --format "{rel_path} {tags.name}"
 ```
 
 One of the most powerful features of ZenKat is the ability to calculate backlinks and resolve paths:
 ```
-zk list --format "{title} [↓{in_link_count} ↑{out_link_count}] ({rel_path})" --sort "in_link_count asc"
+zenkat list pages --sort "in_link_count asc"
 ```
 
 It can correctly operate over dates using filters.
 
 ```
-zk list --filter "created_at > Sep 25 2023 10:00AM"
+zenkat list pages --filter "created_at > Sep 25 2023"
 ```
 
 You can also combine multiple filters, which will act like an AND statement.
 
 ```
-zk list --filter "rel_path has business" --filter "rel_path has Client"
+zenkat list pages --filter "rel_path has business" --filter "rel_path has Client"
 ```
 
 You can sort by fields using straightforward ascending / descending statements. Note that you can only sort on one field at the moment.
 
 ```
-zk list --filter "rel_path has business" --sort "modified_at asc" --format "{modified_at} {filename}"
+zenkat list pages --filter "rel_path has business" --sort "modified_at asc" --format "{modified_at} {filename}"
 ```
 
 You can get a simple list of tags and then find which pages have those tags:
 
 ```
-zk tags
-zk list --filter "tags has personal"
+zenkat list tags
+zenkat list pages --filter "any tags.name = daily"
 ```
 
 ### Fields
 
+#### Pages
 ```
-title: str
-filename: str
-abs_path: str
-rel_path: str
-created_at: datetime
-modified_at: datetime
-tags: set[str]
-out_links: set[str]
-out_link_count: int
-in_links: set[str]
-in_link_count: int
+
+```
+
+#### Tags
+```
+
+
+```
+
+#### Links
+```
+
 ```
 
 ### Filters
@@ -104,7 +106,7 @@ has (opposite of in, works on sets, strings, and dicts)
 
 ### Sorting
 
-You can sort by any non-compound field using the following syntax:
+You can sort by any non-compound field using the following syntax.
 
 ```
 <FIELD> {asc / desc}

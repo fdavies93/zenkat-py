@@ -30,7 +30,7 @@ def cmd_list(args):
         f_str = "{doc_abs_path} → {href_resolved}"
         data = index.links
     elif args.corpus == "pages": 
-        f_str = "[↓{in_link_count} ↑{out_link_count}] {title} ({rel_path})"
+        f_str = "[↓{in_link_count} ↑{out_link_count}] {title}, {word_count} words ({rel_path})"
         data = index.pages
     elif args.corpus == "tags": 
         f_str = "[{count} pages] {name}"
