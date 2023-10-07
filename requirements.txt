@@ -1,2 +1,7 @@
+markdown-it-py==3.0.0
+mdurl==0.1.2
+Pygments==2.16.1
 python-dateutil==2.8.2
+rich==13.6.0
 six==1.16.0
+-e git+ssh://git@github.com/fdavies93/zenkat.git@b677a6c416db8a8a03bc6cc44521f1036c6b209c#egg=zenkat

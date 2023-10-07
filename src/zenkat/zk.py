@@ -1,6 +1,7 @@
 from zenkat import zenkat
 import argparse
 import sys
+from rich import print
 
 def get_pages(args):
     exclude = []
@@ -27,13 +28,13 @@ def cmd_list(args):
     index = zenkat.index(args.path)
 
     if args.corpus == "links":
-        f_str = "{doc_abs_path} → {href_resolved}"
+        f_str = "[u blue]{doc_abs_path}[/u blue] → [u blue]{href_resolved}[/u blue]"
         data = index.links
     elif args.corpus == "pages": 
-        f_str = "[↓{in_link_count} ↑{out_link_count}] {title}, {word_count} words ({rel_path})"
+        f_str = "[green][↓{in_link_count} ↑{out_link_count}][/green] [bold white]{title}[/bold white], [white default]{word_count} words ([u blue]{rel_path}[/u blue])[/white default]"
         data = index.pages
     elif args.corpus == "tags": 
-        f_str = "[{count} pages] {name}"
+        f_str = "[green][{count} pages][/green] [bold]{name}[/bold]"
         data = index.tags
     else: raise ValueError()
     
