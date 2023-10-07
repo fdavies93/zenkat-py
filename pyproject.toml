@@ -15,6 +15,9 @@ classifiers = [
   "License :: OSI Approved :: GNU General Public License (GPL)",
   "Operating System :: OS Independent"
 ]
+dependencies = [
+"python-dateutil"
+]
 [project.urls]
 "Homepage" = "https://github.com/fdavies93/zenkat"
 "Repository" = "https://github.com/fdavies93/zenkat"
