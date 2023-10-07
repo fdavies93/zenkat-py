@@ -8,7 +8,7 @@ This is an example card file which is designed to show some of the features of Z
 
 zenkat now supports [normal markdown links](notes/chapter-1) and wiki-style links like [[notes/chapter-1]]. However, it requires a correct relative path to do so.
 
-[Google](https://www.google.com)
+External links like [Google](https://www.google.com) can be used but may not be indexed.
 
 You can make a list of links:
 - [Daily 1](notes/daily_1)
