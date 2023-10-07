@@ -149,7 +149,7 @@ Operations currently supported are:
 <
 >=
 <=
-has (opposite of in, works on sets, strings, and dicts)
+has (opposite of in, works on sets, lists, strings, and dicts)
 ```
 
 ### Sorting
