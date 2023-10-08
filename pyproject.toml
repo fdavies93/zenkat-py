@@ -16,7 +16,8 @@ classifiers = [
   "Operating System :: OS Independent"
 ]
 dependencies = [
-"python-dateutil"
+"python-dateutil",
+"pyYAML"
 ]
 [project.urls]
 "Homepage" = "https://github.com/fdavies93/zenkat"
