@@ -3,7 +3,7 @@ title: "Chapter 1 of awesome novel"
 author: "Frank"
 ---
 
-#writing #creative-writing #novel
+#creative-writing #writing/novel/chapter-1
 
 [Return to Index](../index)
 

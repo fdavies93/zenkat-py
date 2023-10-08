@@ -9,6 +9,7 @@ from functools import cmp_to_key
 from operator import attrgetter
 from typing import Iterable
 import dateutil.parser
+from yaml import load, Loader
 
 
 @dataclass()
@@ -48,6 +49,7 @@ class Page:
     in_links: list[Link] = field(default_factory=list)
     in_link_count: int = 0
     word_count: int = 0
+    metadata: dict = field(default_factory=dict)
 
 @dataclass
 class Index:
@@ -59,8 +61,24 @@ class Index:
     links: list[Link]
 
 def get_tags(document: str):
-    matches = re.findall("(?:^|\s)#([-_\w\d]+)",document)        
-    return set(matches)
+    matches = re.findall("(?:^|\s)#([-_\w\d\/]+)",document)
+    out = set()
+    for m in matches:
+        for i, char in enumerate(m):
+            if char == '/':
+                out.add(m[:i])
+        out.add(m)
+    return out
+
+def get_header_metadata(document: str):
+    header = re.findall(r"(?:^---\n)((?:.|\n)*?)(?:---)",document)
+    metadata = dict()
+    if len(header) > 0:
+        # uses default loader, which is slower than C version
+        # but adds less dependencies
+        metadata = load(header[0], Loader=Loader)
+    return metadata
+    
 
 def get_wiki_links(document : str) -> list[Link]:
     matches = re.findall("(?:^|\s)\[\[([#\/\-\w\s]+)\]\]", document)
@@ -132,6 +150,9 @@ def index(path : str, exclude : list = []):
             datetime.fromtimestamp(os.path.getmtime(abs))
         )
         document = p.read_text()
+
+        metadata = get_header_metadata(document)
+        cur_page.metadata = metadata
 
         links = get_all_links(document)
         for l in links: l.doc_abs_path = str(p.absolute())
@@ -205,10 +226,19 @@ def convert_input_to_field(data_type, input_str: str, field_name: str):
 def get_field_fn(obj, field_name: str):
     parts = field_name.split(".")
     cur_part = parts[0]
-    field = obj.__dict__[cur_part] # note this only works on objs
+
+    obj_dict = obj
+    if type(obj) != dict:
+        obj_dict = obj.__dict__
+
+    field = obj_dict.get(cur_part)
+
     if len(parts) > 1:
         map_fn = lambda o: get_field_fn(o, ".".join(parts[1:]))
-        field = list(map(map_fn, field))
+        if hasattr(field, "__iter__") and type(field) != dict:
+            field = list(map(map_fn, field)) 
+        # dict is iterable, so this passes str if supplied a single dict
+        else: field = map_fn(field)
     return field
 
 def format_list(objs : list[Any], f_str : str):
