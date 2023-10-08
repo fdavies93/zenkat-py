@@ -51,6 +51,17 @@ class Page:
     in_link_count: int = 0
     word_count: int = 0
     metadata: dict = field(default_factory=dict)
+    headings: dict = field(default_factory=dict)
+    outline: str = ""
+
+@dataclass
+class Heading:
+    '''
+    Metadata about a heading on a page, used for outlines.
+    '''
+    text: str
+    depth: int
+    children: list = field(default_factory=list)
 
 @dataclass
 class Index:
@@ -79,6 +90,37 @@ def get_header_metadata(document: str):
         # but adds less dependencies
         metadata = load(header[0], Loader=Loader)
     return metadata
+
+def get_headings(document: str):
+    pattern = re.compile("^(#+)\s+(.*)", re.MULTILINE)
+    matches = pattern.findall(document)
+    return [Heading(m[1], len(m[0])) for m in matches]
+
+def get_heading_tree(document: str):
+    # technically this pattern is wrong as it doesn't account for code blocks
+    pattern = re.compile("^(#+)\s+(.*)", re.MULTILINE)
+    cur_doc = document
+    next_head = pattern.search(cur_doc)
+    root = Heading("Document",0)
+    cur = root
+    head_stack = []
+    while next_head is not None:
+        next_level = len(next_head.group(1))
+        next_title = next_head.group(2)
+        next = Heading(next_title, next_level)
+        while next_level <= cur.depth:
+            # return up tree until reaching good level
+            cur = head_stack.pop()
+        if next_level > cur.depth:
+            # descend and push to stack
+            cur.children.append(next)
+            head_stack.append(cur)
+            cur = next
+        cur_doc = cur_doc[next_head.end() + 1:]
+        next_head = pattern.search(cur_doc)
+    
+    return root
+
 
 def adjust_config(original, adjuster):
     new_config = deepcopy(original)
@@ -195,6 +237,15 @@ def index(path : str, exclude : list = []):
             datetime.fromtimestamp(os.path.getmtime(abs))
         )
         document = p.read_text()
+
+        headings = get_headings(document)
+        cur_page.headings = headings
+
+        outlines = []
+        for h in headings:
+            outlines.append(f"{h.depth * '#'} {h.text}")
+        outline_str = "\n".join(outlines)
+        cur_page.outline = outline_str
 
         metadata = get_header_metadata(document)
         cur_page.metadata = metadata

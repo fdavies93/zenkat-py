@@ -43,7 +43,6 @@ def cmd_list(args, console: Console, config: dict):
         data = index.tags
     else: raise ValueError()
 
-    print(config)
     quick_format = args.quick_format
     if quick_format != None:
         f_str = config["formats"][quick_format]
