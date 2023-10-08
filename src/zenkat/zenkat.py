@@ -10,7 +10,8 @@ from operator import attrgetter
 from typing import Iterable
 import dateutil.parser
 from yaml import load, Loader
-
+import tomllib
+from copy import deepcopy
 
 @dataclass()
 class Tag:
@@ -78,7 +79,42 @@ def get_header_metadata(document: str):
         # but adds less dependencies
         metadata = load(header[0], Loader=Loader)
     return metadata
-    
+
+def adjust_config(original, adjuster):
+    new_config = deepcopy(original)
+    for key in adjuster:
+        if key not in new_config: continue
+        # need to see how this plays out with lists
+        if type(new_config[key]) == dict and type(new_config[key]) == dict:
+            new_config[key] = adjust_config(new_config[key], adjuster[key])
+            continue
+        new_config[key] = adjuster[key]
+    return new_config
+
+def load_config() -> dict:
+    # load config from an escalating series of paths or default
+    paths = [Path.home() / ".config/zenkat/config.toml"]
+    # default settings
+    config = {
+        "theme": {
+            "colors": {
+                "alert": "red",
+                "info": "bold green",
+                "main": "white bold",
+                "link": "blue underline",
+                "sub": "white default"
+            }
+        }
+    }
+    for path in paths:
+        if not path.exists():
+            print(path)
+            continue
+        with open(path, "rb") as f:
+            new_config = tomllib.load(f)
+        print(new_config)
+        config = adjust_config(config, new_config)
+    return config
 
 def get_wiki_links(document : str) -> list[Link]:
     matches = re.findall("(?:^|\s)\[\[([#\/\-\w\s]+)\]\]", document)
