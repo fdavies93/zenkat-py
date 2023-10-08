@@ -9,6 +9,7 @@ pink = "#b05279"
 blue = "#6c99bb"
 
 info = "#e87d3e bold"
+info2 = "#e5b567"
 link = "#b4d273 underline"
 main = "#d6d6d6 bold"
 sub = "#d6d6d6"

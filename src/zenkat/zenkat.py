@@ -143,6 +143,7 @@ def load_config() -> dict:
             "colors": {
                 "alert": "red",
                 "info": "bold green",
+                "info2": "blue",
                 "main": "white bold",
                 "link": "blue underline",
                 "sub": "white default",
@@ -156,7 +157,8 @@ def load_config() -> dict:
                     "links": "[link]{doc_abs_path}[/link] → [link]{href_resolved}[/link]",
                     "tags": "[info][{count} pages][/info] [main]{name}[/main]"
                 }
-            }
+            },
+            "outline": "[info]{title}[/info]\n{outline}"
         }
     }
     for path in paths:
@@ -243,7 +245,7 @@ def index(path : str, exclude : list = []):
 
         outlines = []
         for h in headings:
-            outlines.append(f"{h.depth * '#'} {h.text}")
+            outlines.append(f"{h.depth * '--'} [info2]{h.text}[/info2]")
         outline_str = "\n".join(outlines)
         cur_page.outline = outline_str
 
