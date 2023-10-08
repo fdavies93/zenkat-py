@@ -105,6 +105,15 @@ def load_config() -> dict:
                 "sub": "white default",
                 "repr.number": "white default"
             }
+        },
+        "formats": {
+            "default": {
+                "list": {
+                    "pages": "[info][↓{in_link_count} ↑{out_link_count}][/info] [main]{title}[/main], [sub]{word_count} words ([link]{rel_path}[/link])[/sub]",
+                    "links": "[link]{doc_abs_path}[/link] → [link]{href_resolved}[/link]",
+                    "tags": "[info][{count} pages][/info] [main]{name}[/main]"
+                }
+            }
         }
     }
     for path in paths:

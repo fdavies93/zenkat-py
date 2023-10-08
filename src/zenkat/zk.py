@@ -20,7 +20,7 @@ def get_pages(args):
         filtered = zenkat.sort_from_query(filtered, args.sort)
     return filtered
 
-def cmd_cat(args, console: Console):
+def cmd_cat(args, console: Console, config: dict):
     path = args.command[1]
     p = Path(path)
     if (p.exists() and p.suffixes[-1] == ".md"):
@@ -28,18 +28,18 @@ def cmd_cat(args, console: Console):
         md = Markdown(document)
         console.print(md)
 
-def cmd_list(args, console):
+def cmd_list(args, console: Console, config: dict):
     index = zenkat.index(args.path)
     corpus = args.command[1]
 
     if corpus == "links":
-        f_str = "[link]{doc_abs_path}[/link] → [link]{href_resolved}[/link]"
+        f_str = config["formats"]["default"]["list"]["links"]
         data = index.links
     elif corpus == "pages": 
-        f_str = "[info][↓{in_link_count} ↑{out_link_count}][/info] [main]{title}[/main], [sub]{word_count} words ([link]{rel_path}[/link])[/sub]"
+        f_str = config["formats"]["default"]["list"]["pages"]
         data = index.pages
     elif corpus == "tags": 
-        f_str = "[info][{count} pages][/info] [main]{name}[/main]"
+        f_str = config["formats"]["default"]["list"]["tags"]
         data = index.tags
     else: raise ValueError()
     
@@ -78,7 +78,7 @@ def main():
     config = zenkat.load_config()
     console = Console(theme=Theme(config["theme"]["colors"]))
 
-    cmd_map[args.command[0]](args, console)
+    cmd_map[args.command[0]](args, console, config)
     
 if __name__ == "__main__":
     sys.exit(main())
