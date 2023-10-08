@@ -102,17 +102,16 @@ def load_config() -> dict:
                 "info": "bold green",
                 "main": "white bold",
                 "link": "blue underline",
-                "sub": "white default"
+                "sub": "white default",
+                "repr.number": "white default"
             }
         }
     }
     for path in paths:
         if not path.exists():
-            print(path)
             continue
         with open(path, "rb") as f:
             new_config = tomllib.load(f)
-        print(new_config)
         config = adjust_config(config, new_config)
     return config
 

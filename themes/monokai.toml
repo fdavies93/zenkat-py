@@ -1,0 +1,5 @@
+[theme.colors]
+info = "#b4d273 bold"
+link = "#6c99bb underline"
+main = "#d6d6d6 bold"
+sub = "#d6d6d6"
