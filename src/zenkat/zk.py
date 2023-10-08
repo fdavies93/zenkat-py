@@ -42,6 +42,11 @@ def cmd_list(args, console: Console, config: dict):
         f_str = config["formats"]["default"]["list"]["tags"]
         data = index.tags
     else: raise ValueError()
+
+    print(config)
+    quick_format = args.quick_format
+    if quick_format != None:
+        f_str = config["formats"][quick_format]
     
     if args.format != None:
         f_str = args.format
@@ -65,7 +70,8 @@ def main():
     parser.add_argument('command', nargs="+")
     parser.add_argument('--path', nargs='?', const='.', type=str, default='.')
     parser.add_argument("-e","--exclude",action='append')
-    parser.add_argument("--format", "-F")
+    parser.add_argument("--format")
+    parser.add_argument("--quick-format","-F")
     parser.add_argument("--filter", "-f", action="append")
     parser.add_argument("--sort", '-s')
     args = parser.parse_args()

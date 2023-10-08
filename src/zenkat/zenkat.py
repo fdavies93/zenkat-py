@@ -83,9 +83,10 @@ def get_header_metadata(document: str):
 def adjust_config(original, adjuster):
     new_config = deepcopy(original)
     for key in adjuster:
-        if key not in new_config: continue
+        k = new_config.get(key)
+        ak = adjuster.get(key)
         # need to see how this plays out with lists
-        if type(new_config[key]) == dict and type(new_config[key]) == dict:
+        if type(k) == dict and type(ak) == dict:
             new_config[key] = adjust_config(new_config[key], adjuster[key])
             continue
         new_config[key] = adjuster[key]
