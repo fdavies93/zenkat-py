@@ -64,6 +64,30 @@ def cmd_list(args, console: Console, config: dict):
     ls = zenkat.format_list(filtered, f_str)
     for line in ls: console.print(line)
 
+def cmd_grep(args, console: Console, config: dict):
+    index = zenkat.index(args.path)
+    regexp = args.command[1]
+    data = index.pages
+
+    filter_strs = []
+    if args.filter != None:
+        filter_strs = args.filter
+
+    filters = [zenkat.parse_filter(f, data[0]) for f in filter_strs]
+    filtered = zenkat.filter_objs(data, filters)
+
+    # context = 3
+    # # how many words around the regexp to return
+    # if args.context != None:
+    #     context = int(args.context)
+
+    for page in filtered:
+        matches = zenkat.grep(page.abs_path, regexp)
+        if len(matches) > 0:
+            console.print(f"[link]{ page.abs_path }[/link]")
+        for match in matches:
+            console.print(f"[info]{match.line_no}[/info] {match.context}")
+
 def main():
     parser = argparse.ArgumentParser(prog="zenkat", description="Zenkat: Library and CLI to use plain markdown files as a Zettelkasten knowledge store.")
     parser.add_argument('command', nargs="+")
@@ -77,7 +101,8 @@ def main():
 
     cmd_map = {
         'list': cmd_list,
-        'cat': cmd_cat
+        'cat': cmd_cat,
+        'grep': cmd_grep
     }
 
     config = zenkat.load_config()

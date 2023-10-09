@@ -64,6 +64,11 @@ class Heading:
     children: list = field(default_factory=list)
 
 @dataclass
+class Match:
+    context: str
+    line_no: int
+
+@dataclass
 class Index:
     '''
     Object containing all other types of document.
@@ -191,6 +196,31 @@ def get_all_links(document: str):
 def get_word_count(document: str):
     words = document.split()
     return len(words)
+
+def grep(path, pattern):
+    regexp = re.compile(pattern)
+    document = Path(path).read_text()
+    doc_lines = document.splitlines()
+
+    matches = []
+    for ln_no, ln in enumerate(doc_lines):
+        out_ln = ""
+        slice = ln
+        next_match = regexp.search(slice)
+        while next_match != None:
+            before = slice[:next_match.start()]
+            m_str = next_match.group(0)
+            out_ln += "{}[info2]{}[/info2]".format(
+                before,
+                m_str
+            )
+            slice = slice[next_match.end():]
+            next_match = regexp.search(slice)
+        
+        if out_ln != "":
+            out_ln += slice
+            matches.append(Match(out_ln, ln_no))
+    return matches
 
 def resolve_links(links : list[Link], path : Path):
     out = []
