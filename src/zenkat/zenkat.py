@@ -31,6 +31,7 @@ class Link:
     text: str
     href: str
     href_resolved: str = ""
+    doc_title: str = ""
     doc_abs_path: str = ""
     type: str = ""
     
@@ -87,6 +88,7 @@ class Index:
     pages: list[Page]
     tags: list[Tag]
     links: list[Link]
+    list_items: list[ListItem]
 
 def get_tags(document: str):
     matches = re.findall("(?:^|\s)#([-_\w\d\/]+)",document)
@@ -217,7 +219,8 @@ def load_config() -> dict:
                 "list": {
                     "pages": "[info][↓{in_link_count} ↑{out_link_count}][/info] [main]{title}[/main], [sub]{word_count} words ([link]{rel_path}[/link])[/sub]",
                     "links": "[link]{doc_abs_path}[/link] → [link]{href_resolved}[/link]",
-                    "tags": "[info][{count} pages][/info] [main]{name}[/main]"
+                    "tags": "[info][{count} pages][/info] [main]{name}[/main]",
+                    "list_items": "[link]{doc_title}[/link]\n[info]({type})[/info] {text}"
                 }
             },
             "outline": "[info]{title}[/info]\n{outline}"
@@ -311,6 +314,7 @@ def index(path : str, exclude : list = []):
     pages: list[Page] = []
     links_out: list[Link] = []
     tags: list[Tag] = []
+    list_items: list[ListItem] = []
     page_paths: dict[str, Page] = dict()
     link_dests: dict[str,list[Link]] = dict()
     tag_names: dict[str, Tag] = dict()
@@ -352,6 +356,8 @@ def index(path : str, exclude : list = []):
         for l in lists:
             for li in l:
                 li.doc_abs_path = abs
+                li.doc_title = title
+                list_items.append(li)
         cur_page.lists = lists
 
         links = get_all_links(document)
@@ -390,7 +396,7 @@ def index(path : str, exclude : list = []):
 
     tags = [t for t in tag_names.values()]
             
-    return Index(pages, tags, links_out)
+    return Index(pages, tags, links_out, list_items)
 
 def get_content(page : Page):
     with open(page.abs_path, 'r') as f:
@@ -438,7 +444,7 @@ def get_field_fn(root, field_name: str):
     parts = field_name.split(".")
     obj = root
     for i, part in enumerate(parts):
-        # * for map-reduce
+        # * for reduce
         field = get_field_simple(obj, part)
         
         if field == None and type(obj) == list:
@@ -518,45 +524,6 @@ def parse_filter(filter_str: str, data_type):
 
     return filter_fn
 
-def generate_filter(filter_str : str, data_type):
-    tokens = filter_str.split()
-    field_name = tokens[0]
-
-    split_field = field_name.split(".")
-
-    # this is kinda turning into a parser
-    if len(split_field) > 1:
-        field_name = split_field[0]
-        subfield_name = split_field[1]
-    
-    operator = tokens[1]
-    tokens[2] = ' '.join(tokens[2:])
-
-    operator_map = {
-        '=': lambda a, b : a == b,
-        'has': lambda a, b : b in a,
-        '>': lambda a, b : a > b,
-        '<': lambda a, b : a < b,
-        '>=': lambda a, b : a >= b,
-        '<=': lambda a, b : a <= b
-    }
-    fn = operator_map[tokens[1]]
-
-    if len(split_field) > 1: # too crude
-        def search_iter(p):
-            iterable = p.__dict__[field_name]
-            for el in iterable:
-                compare_to = convert_input_to_field(el, tokens[2], subfield_name)
-                # convert tokens[2] based on type of subfield
-                subfield = el.__dict__[subfield_name]
-                if fn(el.__dict__[subfield_name], compare_to):
-                    return True
-            return False
-        return search_iter
-
-    compare_to = convert_input_to_field(data_type, tokens[2], field_name)
-    return lambda p : fn(p.__dict__[tokens[0]], tokens[2])
-
 def filter_objs(objs : list[Union[Page,Tag]], filters: list[Callable]):
     out = objs
     for f in filters:
@@ -571,12 +538,12 @@ def sort_from_query(objs: list[Union[Page,Tag]], sort_str : str):
     field = tokens[0]
 
     def key_fn(o : Union[Page,Tag]):
-        attr = o.__dict__[field]
+        attr = get_field_fn(o, field)
         if isinstance(attr, str):
             attr = attr.lower()
         return attr
 
-    return sorted(objs, key=key_fn, reverse = (tokens[1] == 'desc'))
+    return sorted(objs, key=key_fn, reverse = (tokens[1] == 'asc'))
 
 def sort_pages(pages : list[Page], sort_fn: Callable):
     return sorted(pages, key = sort_fn)

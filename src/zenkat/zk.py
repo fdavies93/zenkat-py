@@ -41,6 +41,9 @@ def cmd_list(args, console: Console, config: dict):
     elif corpus == "tags": 
         f_str = config["formats"]["default"]["list"]["tags"]
         data = index.tags
+    elif corpus == "list_items":
+        f_str = config["formats"]["default"]["list"]["list_items"]
+        data = index.list_items
     else: raise ValueError()
 
     quick_format = args.quick_format
