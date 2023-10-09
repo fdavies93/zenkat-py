@@ -451,8 +451,9 @@ def get_field_fn(obj, field_name: str):
         return list(map(reg_fn, field))
 
     if cur_part == "&" and type(field) == list:
-        mapped = list(map(reg_fn, field))
-        return reduce(lambda acc, o: acc + o, mapped, [])
+        # mapped = list(map(reg_fn, field))
+        # return reduce(lambda acc, o: acc + o, mapped, [])
+        return reduce(lambda acc, o: acc + o, reg_fn(field), [])
     
     return reg_fn(field)
 
