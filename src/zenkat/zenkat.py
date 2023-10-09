@@ -423,10 +423,7 @@ def convert_input_to_field(data_type, input_str: str, field_name: str):
         raise NotImplementedError()
     return output
 
-def get_field_fn(obj, field_name: str):
-    parts = field_name.split(".")
-    cur_part = parts[0]
-
+def get_field_simple(obj, field: str):
     if type(obj) == list:
         obj_dict = { str(i): el for i, el in enumerate(obj) }
     elif type(obj) == dict:
@@ -435,27 +432,22 @@ def get_field_fn(obj, field_name: str):
         # it's probably a dataclass
         obj_dict = obj.__dict__
 
-    field = obj_dict.get(cur_part)
-    # * for map, & for concat / map-reduce
-    if field == None and type(obj) == list and cur_part in ("*","&"):
-        field = obj
+    return obj_dict.get(field)
 
-    if len(parts) == 1:
-        return field
-
-    if field is None:
-        return None
-
-    reg_fn = lambda o: get_field_fn(o, ".".join(parts[1:]))
-    if cur_part == "*" and type(field) == list:
-        return list(map(reg_fn, field))
-
-    if cur_part == "&" and type(field) == list:
-        # mapped = list(map(reg_fn, field))
-        # return reduce(lambda acc, o: acc + o, mapped, [])
-        return reduce(lambda acc, o: acc + o, reg_fn(field), [])
-    
-    return reg_fn(field)
+def get_field_fn(root, field_name: str):
+    parts = field_name.split(".")
+    obj = root
+    for i, part in enumerate(parts):
+        # * for map-reduce
+        field = get_field_simple(obj, part)
+        
+        if field == None and type(obj) == list:
+            if part == "*":
+                field = reduce(lambda acc, o: acc + o, obj, [])
+            else:                
+                field = list(map(lambda o : get_field_simple(o, part), obj))
+        obj = field
+    return obj
 
 def format_list(objs : list[Any], f_str : str):
     outputs = []
