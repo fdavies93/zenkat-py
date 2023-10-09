@@ -83,10 +83,11 @@ def cmd_grep(args, console: Console, config: dict):
 
     for page in filtered:
         matches = zenkat.grep(page.abs_path, regexp)
-        if len(matches) > 0:
-            console.print(f"[link]{ page.abs_path }[/link]")
+        if len(matches) == 0: continue
+        console.print(f"[link]{ page.abs_path }[/link]")
         for match in matches:
             console.print(f"[info]{match.line_no}[/info] {match.context}")
+        console.print("")
 
 def main():
     parser = argparse.ArgumentParser(prog="zenkat", description="Zenkat: Library and CLI to use plain markdown files as a Zettelkasten knowledge store.")
