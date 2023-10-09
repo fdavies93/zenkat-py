@@ -12,6 +12,7 @@ import dateutil.parser
 from yaml import load, Loader
 import tomllib
 from copy import deepcopy
+from functools import reduce
 
 @dataclass()
 class Tag:
@@ -426,24 +427,38 @@ def get_field_fn(obj, field_name: str):
     parts = field_name.split(".")
     cur_part = parts[0]
 
-    obj_dict = obj
-    if type(obj) != dict:
+    if type(obj) == list:
+        obj_dict = { str(i): el for i, el in enumerate(obj) }
+    elif type(obj) == dict:
+        obj_dict = obj
+    else:
+        # it's probably a dataclass
         obj_dict = obj.__dict__
 
     field = obj_dict.get(cur_part)
-    return field
+    # * for map, & for concat / map-reduce
+    if field == None and type(obj) == list and cur_part in ("*","&"):
+        field = obj
 
-    # if len(parts) > 1:
-    #     map_fn = lambda o: get_field_fn(o, ".".join(parts[1:]))
-    #     if hasattr(field, "__iter__") and type(field) != dict:
-    #         field = list(map(map_fn, field)) 
-    #     # dict is iterable, so this passes str if supplied a single dict
-    #     else: field = map_fn(field)
-    # return field
+    if len(parts) == 1:
+        return field
+
+    if field is None:
+        return None
+
+    reg_fn = lambda o: get_field_fn(o, ".".join(parts[1:]))
+    if cur_part == "*" and type(field) == list:
+        return list(map(reg_fn, field))
+
+    if cur_part == "&" and type(field) == list:
+        mapped = list(map(reg_fn, field))
+        return reduce(lambda acc, o: acc + o, mapped, [])
+    
+    return reg_fn(field)
 
 def format_list(objs : list[Any], f_str : str):
     outputs = []
-    pattern = "{([\w.]+)}"    
+    pattern = "{([\w\.\*&]+)}"    
     for o in objs:
         templates = re.findall(pattern, f_str)
         replacements = [get_field_fn(o,t) for t in templates]
