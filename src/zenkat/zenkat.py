@@ -431,14 +431,15 @@ def get_field_fn(obj, field_name: str):
         obj_dict = obj.__dict__
 
     field = obj_dict.get(cur_part)
-
-    if len(parts) > 1:
-        map_fn = lambda o: get_field_fn(o, ".".join(parts[1:]))
-        if hasattr(field, "__iter__") and type(field) != dict:
-            field = list(map(map_fn, field)) 
-        # dict is iterable, so this passes str if supplied a single dict
-        else: field = map_fn(field)
     return field
+
+    # if len(parts) > 1:
+    #     map_fn = lambda o: get_field_fn(o, ".".join(parts[1:]))
+    #     if hasattr(field, "__iter__") and type(field) != dict:
+    #         field = list(map(map_fn, field)) 
+    #     # dict is iterable, so this passes str if supplied a single dict
+    #     else: field = map_fn(field)
+    # return field
 
 def format_list(objs : list[Any], f_str : str):
     outputs = []
@@ -446,9 +447,8 @@ def format_list(objs : list[Any], f_str : str):
     for o in objs:
         templates = re.findall(pattern, f_str)
         replacements = [get_field_fn(o,t) for t in templates]
-        cur_str = f_str
-        for i, r in enumerate(replacements):
-            cur_str = re.sub(pattern, str(r), cur_str, count=1)
+        cur_str = re.sub(pattern, "{}", f_str)
+        cur_str = cur_str.format(*replacements)                    
         outputs.append(cur_str)
         
     return outputs

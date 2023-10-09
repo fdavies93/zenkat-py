@@ -57,9 +57,6 @@ def cmd_list(args, console: Console, config: dict):
     filters = [zenkat.parse_filter(f, data[0]) for f in filter_strs]
 
     filtered = zenkat.filter_objs(data, filters)
-    if corpus == "pages":
-        for f in filtered:
-            console.print(f.lists)
     
     if args.sort != None:
         filtered = zenkat.sort_from_query(filtered, args.sort)
