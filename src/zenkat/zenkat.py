@@ -152,7 +152,9 @@ def load_config() -> dict:
                 "main": "white bold",
                 "link": "blue underline",
                 "sub": "white default",
-                "repr.number": "white default"
+                "repr.number": "white default",
+                "repr.str": "white default",
+                "repr.path": "white default"
             }
         },
         "formats": {

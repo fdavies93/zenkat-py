@@ -107,7 +107,7 @@ def main():
     }
 
     config = zenkat.load_config()
-    console = Console(theme=Theme(config["theme"]["colors"], inherit=False))
+    console = Console(theme=Theme(config["theme"]["colors"]))
 
     cmd_map[args.command[0]](args, console, config)
     
