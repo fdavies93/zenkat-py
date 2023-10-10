@@ -209,9 +209,24 @@ def load_config() -> dict:
                 "main": "white bold",
                 "link": "blue underline",
                 "sub": "white default",
+                "status": "yellow bold",
                 "repr.number": "white default",
                 "repr.str": "white default",
                 "repr.path": "white default"
+            },
+            "tasks": {
+                "symbols": {
+                    "done": "✅",
+                    "not done": "⬜",
+                    "in progress": "⏳",
+                    "cancelled": "🚫",
+                    "blocked": "🔴"
+                },
+                "tags": {
+                    "done": ["[strike]","[/strike]"],
+                    "cancelled": ["[alert][strike]","[/strike][/alert]"],
+                    "blocked": ["[alert]","[/alert]"]
+                }
             }
         },
         "formats": {

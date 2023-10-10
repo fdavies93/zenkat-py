@@ -131,6 +131,46 @@ def cmd_query(args, console: Console, config: dict):
     for line in ls:
         console.print(line)
 
+
+def cmd_tasks(args, console: Console, config: dict):
+    index = zenkat.index(args.path)
+    # the first filter applies to the tasks
+    # the second filter applies to the page
+    # all others are ignored
+    filter_strs = []
+    if args.filter != None:
+        filter_strs = args.filter
+
+    pages = index.pages
+
+    li_filter = None
+    if len(filter_strs) > 0:
+        li_filter = zenkat.parse_filter(filter_strs[0], zenkat.ListItem)
+    if len(filter_strs) > 1:
+        page_filter = zenkat.parse_filter(filter_strs[1], zenkat.Page)
+        pages = list(filter(page_filter, pages))
+
+    status_symbols = config["theme"]["tasks"]["symbols"]
+    status_tags = config["theme"]["tasks"]["tags"]
+
+    for p in pages:
+        lis = []
+        for ls in p.lists:
+            l = ls
+            if li_filter is not None: l = list(filter(li_filter, l))
+            l = list(filter(lambda li: li.type == "task", l))
+            lis = lis + l
+        # now we have our list items filtered correctly
+        if len(lis) > 0:
+            console.print(f"[link]{p.title}[/link]")
+        for li in lis:
+            t1, t2 = "",""
+            if li.status in status_tags:
+                t1, t2 = status_tags[li.status]
+            sym = status_symbols.get(li.status)
+            console.print(f"[status]{sym}[/status] {t1}{li.text}{t2}")
+            pass
+
 def main():
     parser = argparse.ArgumentParser(prog="zenkat", description="Zenkat: Library and CLI to use plain markdown files as a Zettelkasten knowledge store.")
     parser.add_argument('command', nargs="+")
@@ -147,7 +187,8 @@ def main():
         'list': cmd_list,
         'cat': cmd_cat,
         'grep': cmd_grep,
-        'query': cmd_query
+        'query': cmd_query,
+        'tasks': cmd_tasks
     }
 
     config = zenkat.load_config()
