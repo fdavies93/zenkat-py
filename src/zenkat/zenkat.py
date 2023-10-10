@@ -223,8 +223,8 @@ def load_config() -> dict:
                     "blocked": "🔴"
                 },
                 "tags": {
-                    "done": ["[strike]","[/strike]"],
-                    "cancelled": ["[alert][strike]","[/strike][/alert]"],
+                    "done": ["[strike][i]","[/i][/strike]"],
+                    "cancelled": ["[alert][strike][i]","[/i][/strike][/alert]"],
                     "blocked": ["[alert]","[/alert]"]
                 }
             }

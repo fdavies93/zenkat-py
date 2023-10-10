@@ -146,8 +146,8 @@ def cmd_tasks(args, console: Console, config: dict):
     li_filter = None
     if len(filter_strs) > 0:
         li_filter = zenkat.parse_filter(filter_strs[0], zenkat.ListItem)
-    if len(filter_strs) > 1:
-        page_filter = zenkat.parse_filter(filter_strs[1], zenkat.Page)
+    if args.page != None:
+        page_filter = zenkat.parse_filter(args.page, zenkat.Page)
         pages = list(filter(page_filter, pages))
 
     status_symbols = config["theme"]["tasks"]["symbols"]
@@ -179,6 +179,7 @@ def main():
     parser.add_argument("--format")
     parser.add_argument("--quick-format","-F")
     parser.add_argument("--filter", "-f", action="append")
+    parser.add_argument("--page")
     parser.add_argument("--sort", '-s')
     parser.add_argument("--query","-q")
     args = parser.parse_args()
