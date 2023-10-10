@@ -280,6 +280,12 @@ You can sort by any non-compound field using the following syntax.
 modified_at asc
 ```
 
+### grep and cat
+
+You can use `zenkat grep` and `zenkat cat` to view your notes in a convenient way. These work much the same way as their command-line equivalents.
+
+Note that while `grep` can use all the usual features of the `list` command, `cat` only takes the path of a single target file.
+
 ### Tasks
 
 As of v0.1 zenkat supports task lists similar to the [Obsidian Tasks Plugin](https://github.com/obsidian-tasks-group/obsidian-tasks), albeit more limited.
