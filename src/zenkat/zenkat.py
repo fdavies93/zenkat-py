@@ -53,7 +53,7 @@ class Page:
     in_link_count: int = 0
     word_count: int = 0
     metadata: dict = field(default_factory=dict)
-    headings: dict = field(default_factory=dict)
+    headings: list = field(default_factory=list)
     outline: str = ""
     lists: list = field(default_factory=list)
 
@@ -487,7 +487,9 @@ def format_list(objs : list[Any], f_str : str):
 def get_operator(op_str):
     operator_map = {
         '=': lambda a, b : a == b,
+        '~': lambda a, b : a != b,
         'has': lambda a, b : b in a,
+        '~has': lambda a, b : b not in a,
         '>': lambda a, b : a > b,
         '<': lambda a, b : a < b,
         '>=': lambda a, b : a >= b,

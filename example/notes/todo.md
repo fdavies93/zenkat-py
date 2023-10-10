@@ -9,6 +9,7 @@ With a little bit of nested heading testing.
 - [/] This one is 'in-progress'.
 - [~] This one is 'cancelled'.
 - [-] This one is 'blocked'.
+- [o] This one does not spark joy.
 
 ## Ordered
 
