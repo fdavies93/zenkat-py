@@ -1,0 +1,10 @@
+[theme.colors]
+pink = "#f5a9b8"
+blue = "#5bcefa"
+
+alert = "magenta bold"
+info = "#5bcefa bold"
+info2 = "#f5a9b8"
+link = "#f5a9b8 underline"
+main = "white bold"
+sub = "white"

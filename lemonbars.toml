@@ -1,0 +1,10 @@
+[theme.colors]
+pink = "#d60270"
+purple = "#9b4f96"
+blue = "#0038a8"
+
+info = "#0038a8 bold"
+info2 = "#9b4f96"
+link = "#9b4f96 underline"
+main = "#d60270 bold"
+sub = "white"
