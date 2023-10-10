@@ -8,7 +8,7 @@ I've used a number of knowledge management tools including Obsidian, Notion, and
 
 It's named this way because of my bad memory for German. I remembered ZEttelKAsTen as ZenKat (unclear where the N came from).
 
-![](images/zk-0-0-9-demo.gif)
+![](images/zk-0-1.gif)
 
 ## Recommended Setup
 
@@ -113,7 +113,7 @@ lists.*.text
 
 
 #### Pages
-```
+```python
 title: str # filename without extensions
 filename: str
 abs_path: str
@@ -134,7 +134,7 @@ lists: list[list[ListItem]]
 
 #### Heading
 
-```
+```python
 text: str
 depth: int
 children: list # not in use
@@ -142,7 +142,7 @@ children: list # not in use
 
 #### Tags
 
-```
+```python
 name: str
 count: int
 docs: str[str] # absolute paths of source documents
@@ -150,7 +150,7 @@ docs: str[str] # absolute paths of source documents
 
 #### ListItem
 
-```
+```python
 text: str
 depth: int # indent level
 type: str
@@ -161,7 +161,7 @@ doc_abs_path: str
 
 #### Links
 
-```
+```python
 text: str
 href: str # the exact text of the link
 href_resolved: str
