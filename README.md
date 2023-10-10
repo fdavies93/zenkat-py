@@ -294,8 +294,8 @@ You can configure the appearance of tasks in `config.toml`:
 ```toml
 [tasks.symbols]
 done = "✅"
-not done = "⬜"
-in progress = "⏳"
+not_done = "⬜"
+in_progress = "⏳"
 cancelled = "🚫"
 blocked = "🔴"
 
