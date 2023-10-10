@@ -3,7 +3,7 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 [project]
 name = "zenkat"
-version = "0.0.10"
+version = "0.1"
 authors = [
   {name = "Frank Davies", email= "frank@fd93.me"}
 ]
