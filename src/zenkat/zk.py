@@ -7,6 +7,7 @@ from rich.theme import Theme
 from rich.markdown import Markdown
 import shlex
 import time
+import os
 
 def get_pages(args):
     exclude = []
@@ -214,6 +215,7 @@ def cmd_macro(args, console, config):
     while True:
         cmd_map[macro_args.command[0]](macro_args, console, config)    
         time.sleep(wait_time)
+        os.system('cls' if os.name == 'nt' else 'clear')
 
 def main():
     parser = create_parser()
