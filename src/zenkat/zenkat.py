@@ -241,6 +241,10 @@ def load_config() -> dict:
             },
             "outline": "[info]{title}[/info]\n{outline}"
         },
+        "macros": {
+            "list_pages": "list pages --sort 'word_count desc'",
+            "stack_overflow": "macro stack_overflow"
+        },
         "queries": {
         }
     }

@@ -5,6 +5,8 @@ from pathlib import Path
 from rich.console import Console
 from rich.theme import Theme
 from rich.markdown import Markdown
+import shlex
+import time
 
 def get_pages(args):
     exclude = []
@@ -171,7 +173,7 @@ def cmd_tasks(args, console: Console, config: dict):
             console.print(f"[status]{sym}[/status] {t1}{li.text}{t2}")
             pass
 
-def main():
+def create_parser():
     parser = argparse.ArgumentParser(prog="zenkat", description="Zenkat: Library and CLI to use plain markdown files as a Zettelkasten knowledge store.")
     parser.add_argument('command', nargs="+")
     parser.add_argument('--path', nargs='?', const='.', type=str, default='.')
@@ -182,15 +184,42 @@ def main():
     parser.add_argument("--page")
     parser.add_argument("--sort", '-s')
     parser.add_argument("--query","-q")
-    args = parser.parse_args()
+    parser.add_argument("--recursive", "-r")
+    return parser
 
-    cmd_map = {
+def get_cmd_map():
+    return {
         'list': cmd_list,
         'cat': cmd_cat,
         'grep': cmd_grep,
         'query': cmd_query,
-        'tasks': cmd_tasks
+        'tasks': cmd_tasks,
+        'macro': cmd_macro
     }
+
+def cmd_macro(args, console, config):
+    macro_name = args.command[1]
+    macro_str = config["macros"][macro_name]
+    macro_arg_str = shlex.split(macro_str)
+    parser = create_parser()
+    cmd_map = get_cmd_map()
+
+    macro_args = parser.parse_args(macro_arg_str)
+
+    if args.recursive == None:
+        cmd_map[macro_args.command[0]](macro_args, console, config)    
+        return
+    
+    wait_time = float(args.recursive)
+    while True:
+        cmd_map[macro_args.command[0]](macro_args, console, config)    
+        time.sleep(wait_time)
+
+def main():
+    parser = create_parser()
+    args = parser.parse_args()
+
+    cmd_map = get_cmd_map()
 
     config = zenkat.load_config()
     console = Console(theme=Theme(config["theme"]["colors"]))
