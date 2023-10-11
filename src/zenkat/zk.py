@@ -29,7 +29,7 @@ def cmd_cat(args, console: Console, config: dict):
         console.print(md)
 
 def cmd_list(args, console: Console, config: dict):
-    index = zenkat.index(args.path)
+    index = zenkat.index(args.path, config)
     corpus = args.command[1]
 
     if corpus == "links":
@@ -93,7 +93,7 @@ def cmd_grep(args, console: Console, config: dict):
         console.print("")
 
 def cmd_query(args, console: Console, config: dict):
-    index = zenkat.index(args.path)
+    index = zenkat.index(args.path, config)
     if len(args.command) > 1 and config["queries"].get(args.command[1]) != None:
         query = config["queries"].get(args.command[1])
     elif args.query != None:
@@ -133,7 +133,7 @@ def cmd_query(args, console: Console, config: dict):
 
 
 def cmd_tasks(args, console: Console, config: dict):
-    index = zenkat.index(args.path)
+    index = zenkat.index(args.path, config)
     # the first filter applies to the tasks
     # the second filter applies to the page
     # all others are ignored

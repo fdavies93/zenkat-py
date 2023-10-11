@@ -139,7 +139,7 @@ def get_heading_tree(document: str):
     
     return root
 
-def get_lists(document: str):
+def get_lists(document: str, todo_map: dict):
     # find list items, groups are:
     # 1: number of whitespace characters before (indent level)
     # 2: the list heading itself -- format determines type
@@ -148,14 +148,7 @@ def get_lists(document: str):
     pattern = re.compile(r"^([ \t]*)(\*|\-|\d+\.)[ ]+(?:(\[.\])[ ]+)?(.*)")
     out = []
     cur_list = []
-
-    todo_map = {
-        " ": "not done",
-        "x": "done",
-        "/": "in progress",
-        "~": "cancelled",
-        "-": "blocked"
-    }
+    
     last_ln = -1
 
     for ln_no, ln in enumerate(document.splitlines()):
@@ -220,7 +213,8 @@ def load_config() -> dict:
                     "not done": "⬜",
                     "in progress": "⏳",
                     "cancelled": "🚫",
-                    "blocked": "🔴"
+                    "blocked": "🔴",
+                    "unknown": "❓"
                 },
                 "tags": {
                     "done": ["[strike][i]","[/i][/strike]"],
@@ -237,6 +231,13 @@ def load_config() -> dict:
                     "tags": "[info][{count} pages][/info] [main]{name}[/main]",
                     "list_items": "[link]{doc_title}[/link]\n[info]({type})[/info] {text}"
                 }
+            },
+            "task_map": {
+                " ": "not done",
+                "x": "done",
+                "/": "in progress",
+                "~": "cancelled",
+                "-": "blocked",
             },
             "outline": "[info]{title}[/info]\n{outline}"
         },
@@ -326,7 +327,7 @@ def resolve_links(links : list[Link], path : Path):
 
     return out
     
-def index(path : str, exclude : list = []):
+def index(path : str, config : dict, exclude : list = []):
     
     pages: list[Page] = []
     links_out: list[Link] = []
@@ -369,7 +370,7 @@ def index(path : str, exclude : list = []):
         metadata = get_header_metadata(document)
         cur_page.metadata = metadata
 
-        lists = get_lists(document)
+        lists = get_lists(document, config["formats"]["task_map"])
         for l in lists:
             for li in l:
                 li.doc_abs_path = abs
