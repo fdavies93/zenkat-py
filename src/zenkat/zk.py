@@ -213,9 +213,9 @@ def cmd_macro(args, console, config):
     
     wait_time = float(args.recursive)
     while True:
+        console.clear()
         cmd_map[macro_args.command[0]](macro_args, console, config)    
         time.sleep(wait_time)
-        os.system('cls' if os.name == 'nt' else 'clear')
 
 def main():
     parser = create_parser()
