@@ -3,7 +3,7 @@ default_config = {
         "colors": {
             "alert": "red",
             "info": "bold green",
-            "info2": "blue",
+            "info2": "magenta",
             "main": "white bold",
             "link": "blue underline",
             "sub": "white default",
