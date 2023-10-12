@@ -71,7 +71,7 @@ def cmd_list(args, console: Console, config: dict):
     for line in ls: console.print(line)
 
 def cmd_grep(args, console: Console, config: dict):
-    index = zenkat.index(args.path)
+    index = zenkat.index(args.path, config)
     regexp = args.command[1]
     data = index.pages
 
