@@ -67,6 +67,13 @@ def cmd_list(args, console: Console, config: dict):
     if args.sort != None:
         filtered = zenkat.sort_from_query(filtered, args.sort)
 
+    if args.limit != None:
+        limit_no = int(args.limit)
+        if limit_no > 0:
+            filtered = filtered[:limit_no]
+        elif limit_no < 0:
+            filtered = filtered[limit_no:]
+
     ls = zenkat.format_list(filtered, f_str)
     for line in ls: console.print(line)
 
@@ -82,10 +89,14 @@ def cmd_grep(args, console: Console, config: dict):
     filters = [zenkat.parse_filter(f, data[0]) for f in filter_strs]
     filtered = zenkat.filter_objs(data, filters)
 
+    limit_no = -1
+    if args.limit != None:
+        limit_no = int(args.limit)
     # context = 3
     # # how many words around the regexp to return
     # if args.context != None:
     #     context = int(args.context)
+    match_no = 0
 
     for page in filtered:
         matches = zenkat.grep(page.abs_path, regexp)
@@ -93,6 +104,9 @@ def cmd_grep(args, console: Console, config: dict):
         console.print(f"[link]{ page.abs_path }[/link]")
         for match in matches:
             console.print(f"[info]{match.line_no}[/info] {match.context}")
+            match_no += 1
+            if limit_no > -1 and match_no > limit_no:
+                return
         console.print("")
 
 def cmd_query(args, console: Console, config: dict):
@@ -156,6 +170,14 @@ def cmd_tasks(args, console: Console, config: dict):
     status_symbols = config["theme"]["tasks"]["symbols"]
     status_tags = config["theme"]["tasks"]["tags"]
 
+    li_limit = 0
+    if args.limit != None:
+        li_limit = int(args.limit)
+    
+    li_no = 0
+
+    # tasks should be a compound data structure or tuple
+    # i.e. REQUIRES REWRITE TO BE MORE IDIOMATIC
     for p in pages:
         lis = []
         for ls in p.lists:
@@ -172,7 +194,31 @@ def cmd_tasks(args, console: Console, config: dict):
                 t1, t2 = status_tags[li.status]
             sym = status_symbols.get(li.status)
             console.print(f"[status]{sym}[/status] {t1}{li.text}{t2}")
-            pass
+            li_no += 1
+            if li_limit != 0 and li_no > li_limit:
+                return
+
+def cmd_outline(args, console: Console, config: dict):
+    index = zenkat.index(args.path, config)
+
+    def print_node(node: zenkat.Heading):
+        # these can be configured
+        root_tag = "[info]", "[/info]"
+        body_tag = "[main]", "[/main]"
+        spacer_tag = "", ""
+        spacer = "--"
+        spacer_end = "> "
+        output = ""
+        if node.depth == 0: 
+            body_tag = root_tag
+            spacer_end = ""
+        output += spacer_tag[0] + (node.depth * spacer) + spacer_end + spacer_tag[1] + body_tag[0] + node.text + body_tag[1]
+
+        console.print(output)
+
+    for page in index.pages:
+        zenkat.node_tree_dft(page.heading_tree, "children", print_node)
+    
 
 def create_parser():
     parser = argparse.ArgumentParser(prog="zenkat", description="Zenkat: Library and CLI to use plain markdown files as a Zettelkasten knowledge store.")
@@ -186,6 +232,7 @@ def create_parser():
     parser.add_argument("--sort", '-s')
     parser.add_argument("--query","-q")
     parser.add_argument("--recursive", "-r")
+    parser.add_argument("--limit","-l")
     return parser
 
 def get_cmd_map():
@@ -195,7 +242,8 @@ def get_cmd_map():
         'grep': cmd_grep,
         'query': cmd_query,
         'tasks': cmd_tasks,
-        'macro': cmd_macro
+        'macro': cmd_macro,
+        'outline': cmd_outline
     }
 
 def cmd_macro(args, console, config):

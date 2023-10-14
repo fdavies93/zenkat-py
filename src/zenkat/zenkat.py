@@ -55,6 +55,7 @@ class Page:
     word_count: int = 0
     metadata: dict = field(default_factory=dict)
     headings: list = field(default_factory=list)
+    heading_tree: list = field(default_factory=list)
     outline: str = ""
     lists: list = field(default_factory=list)
 
@@ -80,6 +81,18 @@ class ListItem:
     status: Union[str, None] # None, done, not done, in progress, blocked, cancelled
     children: list = field(default_factory=list)
     doc_abs_path: str = ""
+
+@dataclass
+class Task:
+    # when filtering tasks, act like a redirect
+    # from the user's perspective they're filtering
+    # on a property called 'task'
+    # actually, they're intervening in the method used
+    # to return nested lists from a page and culling
+    # nodes which don't pass the filter
+    # what task actually returns is an n-tree for each document
+    task: ListItem
+    linked_page: Page
 
 @dataclass
 class Index:
@@ -115,12 +128,12 @@ def get_headings(document: str):
     matches = pattern.findall(document)
     return [Heading(m[1], len(m[0])) for m in matches]
 
-def get_heading_tree(document: str):
+def get_heading_tree(title: str, document: str):
     # technically this pattern is wrong as it doesn't account for code blocks
     pattern = re.compile("^(#+)\s+(.*)", re.MULTILINE)
     cur_doc = document
     next_head = pattern.search(cur_doc)
-    root = Heading("Document",0)
+    root = Heading(title,0)
     cur = root
     head_stack = []
     while next_head is not None:
@@ -139,6 +152,14 @@ def get_heading_tree(document: str):
         next_head = pattern.search(cur_doc)
     
     return root
+
+def node_tree_dft(root, child_property: str, do_fn: Callable):
+    # perform a Depth First Traversal of a node tree and do something at each node
+    do_fn(root)
+    children = root.__dict__[child_property]
+    for child in children:
+        node_tree_dft(child, child_property, do_fn)
+    
 
 def get_lists(document: str, todo_map: dict):
     # find list items, groups are:
@@ -311,6 +332,8 @@ def index(path : str, config : dict, exclude : list = []):
 
         headings = get_headings(document)
         cur_page.headings = headings
+        heading_tree = get_heading_tree(title,document)
+        cur_page.heading_tree = heading_tree
 
         outlines = []
         for h in headings:
@@ -560,7 +583,7 @@ def sort_from_query(objs: list[Union[Page,Tag]], sort_str : str):
             attr = attr.lower()
         return attr
 
-    return sorted(objs, key=key_fn, reverse = (tokens[1] == 'asc'))
+    return sorted(objs, key=key_fn, reverse = (tokens[1] == 'desc'))
 
 def sort_pages(pages : list[Page], sort_fn: Callable):
     return sorted(pages, key = sort_fn)
