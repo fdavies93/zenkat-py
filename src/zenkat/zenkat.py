@@ -56,7 +56,6 @@ class Page:
     metadata: dict = field(default_factory=dict)
     headings: list = field(default_factory=list)
     heading_tree: list = field(default_factory=list)
-    outline: str = ""
     lists: list = field(default_factory=list)
 
 @dataclass
@@ -334,12 +333,6 @@ def index(path : str, config : dict, exclude : list = []):
         cur_page.headings = headings
         heading_tree = get_heading_tree(title,document)
         cur_page.heading_tree = heading_tree
-
-        outlines = []
-        for h in headings:
-            outlines.append(f"{h.depth * '--'} [info2]{h.text}[/info2]")
-        outline_str = "\n".join(outlines)
-        cur_page.outline = outline_str
 
         metadata = get_header_metadata(document)
         cur_page.metadata = metadata
