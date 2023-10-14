@@ -37,14 +37,20 @@ default_config = {
                 "list_items": "[link]{doc_title}[/link]\n[info]({type})[/info] {text}"
             }
         },
+        "outline": {
+            "root_tag": ("[info]","[/info]"),
+            "body_tag": ("[main]","[/main]"),
+            "spacer_tag": ("",""),
+            "spacer": "--",
+            "spacer_end": "> "
+        },
         "task_map": {
             " ": "not done",
             "x": "done",
             "/": "in progress",
             "~": "cancelled",
             "-": "blocked",
-        },
-        "outline": "[info]{title}[/info]\n{outline}"
+        }
     },
     "macros": {
         "list_pages": "list pages --sort 'word_count desc'",

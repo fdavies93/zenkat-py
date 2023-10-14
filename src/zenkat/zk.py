@@ -8,6 +8,7 @@ from rich.markdown import Markdown
 import shlex
 import time
 import os
+import operator
 
 def get_pages(args):
     exclude = []
@@ -201,18 +202,16 @@ def cmd_tasks(args, console: Console, config: dict):
 def cmd_outline(args, console: Console, config: dict):
     index = zenkat.index(args.path, config)
 
+    outline = config["formats"]["outline"]
+
+    root_tag, body_tag, spacer_tag, spacer, spacer_end = [outline[v] for v in ("root_tag","body_tag","spacer_tag","spacer","spacer_end")]
+
     def print_node(node: zenkat.Heading):
-        # these can be configured
-        root_tag = "[info]", "[/info]"
-        body_tag = "[main]", "[/main]"
-        spacer_tag = "", ""
-        spacer = "--"
-        spacer_end = "> "
         output = ""
+        bt = body_tag
         if node.depth == 0: 
-            body_tag = root_tag
-            spacer_end = ""
-        output += spacer_tag[0] + (node.depth * spacer) + spacer_end + spacer_tag[1] + body_tag[0] + node.text + body_tag[1]
+            bt = root_tag
+        output += spacer_tag[0] + (node.depth * spacer) + spacer_end + spacer_tag[1] + bt[0] + node.text + bt[1]
 
         console.print(output)
 
