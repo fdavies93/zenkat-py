@@ -1,17 +1,18 @@
-from zenkat import zenkat, extract
+from zenkat import index, extract, filter
 from rich.console import Console
+from dataclasses import dataclass
 
 def grep(args, console: Console, config: dict):
-    index = zenkat.index(args.path, config)
+    idx = index.index(args.path, config)
     regexp = args.command[1]
-    data = index.pages
+    data = idx.pages
 
     filter_strs = []
     if args.filter != None:
         filter_strs = args.filter
 
-    filters = [zenkat.parse_filter(f, data[0]) for f in filter_strs]
-    filtered = zenkat.filter_objs(data, filters)
+    filters = [filter.parse_filter(f, data[0]) for f in filter_strs]
+    filtered = filter.filter_objs(data, filters)
 
     limit_no = -1
     if args.limit != None:

@@ -47,6 +47,11 @@ class Page:
     lists_tree: list = field(default_factory=list)
 
 @dataclass
+class Match:
+    context: str
+    line_no: int
+
+@dataclass
 class Heading:
     '''
     Metadata about a heading on a page, used for outlines.
@@ -54,11 +59,6 @@ class Heading:
     text: str
     depth: int
     children: list = field(default_factory=list)
-
-@dataclass
-class Match:
-    context: str
-    line_no: int
 
 @dataclass
 class ListItem:

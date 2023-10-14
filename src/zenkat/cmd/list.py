@@ -1,22 +1,22 @@
-from zenkat import zenkat
+from zenkat import filter, sort, format, index
 from rich.console import Console
 
 def ls(args, console: Console, config: dict):
-    index = zenkat.index(args.path, config)
+    idx = index.index(args.path, config)
     corpus = args.command[1]
 
     if corpus == "links":
         f_str = config["formats"]["default"]["list"]["links"]
-        data = index.links
+        data = idx.links
     elif corpus == "pages": 
         f_str = config["formats"]["default"]["list"]["pages"]
-        data = index.pages
+        data = idx.pages
     elif corpus == "tags": 
         f_str = config["formats"]["default"]["list"]["tags"]
-        data = index.tags
+        data = idx.tags
     elif corpus == "list_items":
         f_str = config["formats"]["default"]["list"]["list_items"]
-        data = index.list_items
+        data = idx.list_items
     else: raise ValueError()
 
     quick_format = args.quick_format
@@ -30,12 +30,12 @@ def ls(args, console: Console, config: dict):
     if args.filter != None:
         filter_strs = args.filter
 
-    filters = [zenkat.parse_filter(f, data[0]) for f in filter_strs]
+    filters = [filter.parse_filter(f, data[0]) for f in filter_strs]
 
-    filtered = zenkat.filter_objs(data, filters)
+    filtered = filter.filter_objs(data, filters)
     
     if args.sort != None:
-        filtered = zenkat.sort_from_query(filtered, args.sort)
+        filtered = sort.sort_from_query(filtered, args.sort)
 
     if args.limit != None:
         limit_no = int(args.limit)
@@ -44,5 +44,5 @@ def ls(args, console: Console, config: dict):
         elif limit_no < 0:
             filtered = filtered[limit_no:]
 
-    ls = zenkat.format_list(filtered, f_str)
+    ls = format.format_list(filtered, f_str)
     for line in ls: console.print(line)

@@ -1,8 +1,10 @@
-from zenkat import zenkat
+from zenkat import index
+import zenkat.filter
+import zenkat.objects
 from rich.console import Console
 
 def tasks(args, console: Console, config: dict):
-    index = zenkat.index(args.path, config)
+    idx = index.index(args.path, config)
     # the first filter applies to the tasks
     # the second filter applies to the page
     # all others are ignored
@@ -10,13 +12,13 @@ def tasks(args, console: Console, config: dict):
     if args.filter != None:
         filter_strs = args.filter
 
-    pages = index.pages
+    pages = idx.pages
 
     li_filter = None
     if len(filter_strs) > 0:
-        li_filter = zenkat.parse_filter(filter_strs[0], zenkat.ListItem)
+        li_filter = zenkat.filter.parse_filter(filter_strs[0], zenkat.objects.ListItem)
     if args.page != None:
-        page_filter = zenkat.parse_filter(args.page, zenkat.Page)
+        page_filter = zenkat.filter.parse_filter(args.page, zenkat.objects.Page)
         pages = list(filter(page_filter, pages))
 
     status_symbols = config["theme"]["tasks"]["symbols"]
