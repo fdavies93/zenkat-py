@@ -12,7 +12,7 @@ import dateutil.parser
 from copy import deepcopy
 from functools import reduce
 from zenkat.objects import Tag, Link, Page, Heading, ListItem, Task, Index
-from zenkat.extract import get_headings, get_heading_tree, get_header_metadata, get_lists, get_all_links, get_word_count, get_tags
+from zenkat.extract import get_headings, get_heading_tree, get_header_metadata, get_lists, get_all_links, get_word_count, get_tags, get_list_tree
 import zenkat.fields as fields
     
 def resolve_links(links : list[Link], path : Path):
@@ -79,6 +79,9 @@ def index(path : str, config : dict, exclude : list = []):
                 li.doc_title = title
                 list_items.append(li)
         cur_page.lists = lists
+
+        list_tree = get_list_tree(title, document, config["formats"]["task_map"])
+        cur_page.lists_tree = list_tree
 
         links = get_all_links(document)
         for l in links: l.doc_abs_path = str(p.absolute())

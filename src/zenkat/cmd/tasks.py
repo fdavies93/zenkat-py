@@ -1,6 +1,7 @@
 from zenkat import index
 import zenkat.filter
 import zenkat.objects
+from zenkat.utils import node_tree_dft
 from rich.console import Console
 
 def tasks(args, console: Console, config: dict):
@@ -23,31 +24,42 @@ def tasks(args, console: Console, config: dict):
 
     status_symbols = config["theme"]["tasks"]["symbols"]
     status_tags = config["theme"]["tasks"]["tags"]
+    spacer = config["theme"]["tasks"]["spacer"]
+    spacer_tag = config["theme"]["tasks"]["spacer_tag"]
+    spacer_end = config["theme"]["tasks"]["spacer_end"]
+    page_title_tag = config["theme"]["tasks"]["page_title_tag"]
+    page_link_tag = config["theme"]["tasks"]["page_link_tag"]
 
     li_limit = 0
     if args.limit != None:
         li_limit = int(args.limit)
     
     li_no = 0
+    li_strs = []
 
+    def do_fn(li: zenkat.objects.ListItem):
+        if li.depth < 0: return True
+        if li.type != "task": return False
+        if li_filter is not None and not li_filter(li):
+            return False
+        nonlocal li_no, li_strs
+        if li_limit > 0 and li_no > li_limit: return False
+        t1, t2 = "", ""
+        if li.status in status_tags:
+            t1, t2 = status_tags[li.status]
+        sym = status_symbols.get(li.status)
+        spacer_str = spacer_tag[0] + (spacer * li.depth) + spacer_end + spacer_tag[1]
+        li_str = f"{spacer_str}[status]{sym}[/status] {t1}{li.text}{t2}"
+        li_strs.append(li_str)
+        li_no += 1
+        return True
+        
     # tasks should be a compound data structure or tuple
     # i.e. REQUIRES REWRITE TO BE MORE IDIOMATIC
     for p in pages:
-        lis = []
-        for ls in p.lists:
-            l = ls
-            if li_filter is not None: l = list(filter(li_filter, l))
-            l = list(filter(lambda li: li.type == "task", l))
-            lis = lis + l
-        # now we have our list items filtered correctly
-        if len(lis) > 0:
-            console.print(f"[link]{p.title}[/link]")
-        for li in lis:
-            t1, t2 = "",""
-            if li.status in status_tags:
-                t1, t2 = status_tags[li.status]
-            sym = status_symbols.get(li.status)
-            console.print(f"[status]{sym}[/status] {t1}{li.text}{t2}")
-            li_no += 1
-            if li_limit != 0 and li_no > li_limit:
-                return
+        li_strs = []
+        node_tree_dft(p.lists_tree, "children", do_fn)
+        if len(li_strs) == 0: continue
+        console.print(f"{page_title_tag[0]}{p.title}{page_title_tag[1]} ({page_link_tag[0]}{p.rel_path}{page_link_tag[1]})")
+        for li_str in li_strs:
+            console.print(li_str)

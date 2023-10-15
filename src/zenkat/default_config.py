@@ -25,7 +25,12 @@ default_config = {
                 "done": ["[strike][i]","[/i][/strike]"],
                 "cancelled": ["[alert][strike][i]","[/i][/strike][/alert]"],
                 "blocked": ["[alert]","[/alert]"]
-            }
+            },
+            "spacer_tag": ("", ""),
+            "spacer": " ",
+            "spacer_end": "",
+            "page_title_tag": ("[info]", "[/info]"),
+            "page_link_tag": ("[link]", "[/link]")
         }
     },
     "formats": {

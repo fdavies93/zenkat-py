@@ -22,7 +22,25 @@ class Link:
     doc_title: str = ""
     doc_abs_path: str = ""
     type: str = ""
-    
+
+@dataclass
+class Heading:
+    '''
+    Metadata about a heading on a page, used for outlines.
+    '''
+    text: str
+    depth: int
+    children: list = field(default_factory=list)
+
+@dataclass
+class ListItem:
+    text: str
+    depth: int
+    type: str # ordered, unordered, task
+    status: Union[str, None] # None, done, not done, in progress, blocked, cancelled
+    children: list = field(default_factory=list)
+    doc_abs_path: str = ""
+
 @dataclass()
 class Page:
     '''
@@ -42,32 +60,15 @@ class Page:
     word_count: int = 0
     metadata: dict = field(default_factory=dict)
     headings: list = field(default_factory=list)
-    heading_tree: list = field(default_factory=list)
+    heading_tree: Heading = None
     lists: list = field(default_factory=list)
-    lists_tree: list = field(default_factory=list)
+    lists_tree: ListItem = None
 
 @dataclass
 class Match:
     context: str
     line_no: int
 
-@dataclass
-class Heading:
-    '''
-    Metadata about a heading on a page, used for outlines.
-    '''
-    text: str
-    depth: int
-    children: list = field(default_factory=list)
-
-@dataclass
-class ListItem:
-    text: str
-    depth: int
-    type: str # ordered, unordered, task
-    status: Union[str, None] # None, done, not done, in progress, blocked, cancelled
-    children: list = field(default_factory=list)
-    doc_abs_path: str = ""
 
 @dataclass
 class Task:

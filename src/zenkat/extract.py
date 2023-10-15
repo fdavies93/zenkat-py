@@ -53,6 +53,45 @@ def get_heading_tree(title: str, document: str):
     
     return root
 
+def get_list_tree(title: str, document: str, todo_map: dict):    
+    # find list items, groups are:
+    # 1: number of whitespace characters before (indent level)
+    # 2: the list heading itself -- format determines type
+    # 3: (optional) a todo box
+    # 4: the actual text of the item
+    pattern = re.compile(r"^([ \t]*)(\*|\-|\d+\.)[ ]+(?:(\[.\])[ ]+)?(.*)", re.MULTILINE)
+    cur_doc = document
+
+    next_ls = pattern.search(cur_doc)
+    root = ListItem(title, -1,"unordered",None)
+    cur = root
+    stack = []
+
+    while next_ls is not None:
+        next_level, bullet, todo, text = next_ls.groups()
+        next_level = len(next_level)
+
+        # get type and status from bullet
+        # could be its own function
+        status = None
+        if todo is not None and len(todo) > 0:
+            li_type = "task"
+            status = todo_map.get(todo[1])
+            if status == None: status = "unknown"
+        elif bullet[0] in "-*": li_type = "unordered"
+        else: li_type = "ordered"            
+        
+        next = ListItem(text,next_level,li_type,status)
+        while next_level <= cur.depth:
+            cur = stack.pop()
+        if next_level > cur.depth:
+            cur.children.append(next)
+            stack.append(cur)
+            cur = next
+        cur_doc = cur_doc[next_ls.end() + 1:]
+        next_ls = pattern.search(cur_doc)
+
+    return root
 
 def get_lists(document: str, todo_map: dict):
     # find list items, groups are:
@@ -60,7 +99,7 @@ def get_lists(document: str, todo_map: dict):
     # 2: the list heading itself -- format determines type
     # 3: (optional) a todo box
     # 4: the actual text of the item
-    pattern = re.compile(r"^([ \t]*)(\*|\-|\d+\.)[ ]+(?:(\[.\])[ ]+)?(.*)")
+    pattern = re.compile(r"^([ \t]*)(\*|\-|\d+\.)[ ]+(?:(\[.\])[ ]+)?(.*)", re.MULTILINE)
     out = []
     cur_list = []
     
