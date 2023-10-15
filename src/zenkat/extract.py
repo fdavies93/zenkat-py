@@ -71,6 +71,7 @@ def get_list_tree(title: str, document: str, todo_map: dict):
         next_level, bullet, todo, text = next_ls.groups()
         next_level = len(next_level)
 
+        links = get_all_links(text)
         # get type and status from bullet
         # could be its own function
         status = None
@@ -81,7 +82,7 @@ def get_list_tree(title: str, document: str, todo_map: dict):
         elif bullet[0] in "-*": li_type = "unordered"
         else: li_type = "ordered"            
         
-        next = ListItem(text,next_level,li_type,status)
+        next = ListItem(text,next_level,li_type,status, links=links)
         while next_level <= cur.depth:
             cur = stack.pop()
         if next_level > cur.depth:

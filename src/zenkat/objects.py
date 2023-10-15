@@ -22,6 +22,7 @@ class Link:
     doc_title: str = ""
     doc_abs_path: str = ""
     type: str = ""
+    linked_metadata: dict = field(default_factory=dict)
 
 @dataclass
 class Heading:
@@ -40,6 +41,7 @@ class ListItem:
     status: Union[str, None] # None, done, not done, in progress, blocked, cancelled
     children: list = field(default_factory=list)
     doc_abs_path: str = ""
+    links: list = field(default_factory=list)
 
 @dataclass()
 class Page:

@@ -14,6 +14,7 @@ from functools import reduce
 from zenkat.objects import Tag, Link, Page, Heading, ListItem, Task, Index
 from zenkat.extract import get_headings, get_heading_tree, get_header_metadata, get_lists, get_all_links, get_word_count, get_tags, get_list_tree
 import zenkat.fields as fields
+from zenkat.utils import node_tree_dft
     
 def resolve_links(links : list[Link], path : Path):
     out = []
@@ -116,6 +117,21 @@ def index(path : str, config : dict, exclude : list = []):
         if link_dest not in page_paths: continue
         page_paths[link_dest].in_links = link_obj
         page_paths[link_dest].in_link_count = len(link_obj)
+
+
+    for p in pages:
+    # calculate links in list items and attach metadata from pages (no more loading)
+        def list_metadata_append(li: ListItem):
+            if len(li.links) <= 0: return True
+            root = Path(p.abs_path).parent
+            li.links = resolve_links(li.links, root)
+            for link in li.links:
+                if link.href_resolved not in page_paths: continue
+                p2 = page_paths[link.href_resolved]
+                link.linked_metadata = p2.metadata
+            return True
+
+        node_tree_dft(p.lists_tree, "children", list_metadata_append)
 
     tags = [t for t in tag_names.values()]
             

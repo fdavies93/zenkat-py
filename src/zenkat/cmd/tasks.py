@@ -52,10 +52,12 @@ def tasks(args, console: Console, config: dict):
         li_str = f"{spacer_str}[status]{sym}[/status] {t1}{li.text}{t2}"
         li_strs.append(li_str)
         li_no += 1
+
+        for link in li.links:
+            for key, value in link.linked_metadata.items():
+                print(key, value)
         return True
         
-    # tasks should be a compound data structure or tuple
-    # i.e. REQUIRES REWRITE TO BE MORE IDIOMATIC
     for p in pages:
         li_strs = []
         node_tree_dft(p.lists_tree, "children", do_fn)
