@@ -21,8 +21,13 @@ default_config = {
                 "blocked": "🔴",
                 "unknown": "❓"
             },
+            "metadata": {
+                "due": "⏰",
+                "priority": "🚩"
+            },
             "tags": {
                 "done": ["[strike][i]","[/i][/strike]"],
+                "not done": ["[sub]","[/sub]"],
                 "cancelled": ["[alert][strike][i]","[/i][/strike][/alert]"],
                 "blocked": ["[alert]","[/alert]"]
             },

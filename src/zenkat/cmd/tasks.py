@@ -3,6 +3,9 @@ import zenkat.filter
 import zenkat.objects
 from zenkat.utils import node_tree_dft
 from rich.console import Console
+from rich.markdown import Markdown
+import dateutil
+import datetime
 
 def tasks(args, console: Console, config: dict):
     idx = index.index(args.path, config)
@@ -29,6 +32,7 @@ def tasks(args, console: Console, config: dict):
     spacer_end = config["theme"]["tasks"]["spacer_end"]
     page_title_tag = config["theme"]["tasks"]["page_title_tag"]
     page_link_tag = config["theme"]["tasks"]["page_link_tag"]
+    metadata_symbols = config["theme"]["tasks"]["metadata"]
 
     li_limit = 0
     if args.limit != None:
@@ -49,13 +53,34 @@ def tasks(args, console: Console, config: dict):
             t1, t2 = status_tags[li.status]
         sym = status_symbols.get(li.status)
         spacer_str = spacer_tag[0] + (spacer * li.depth) + spacer_end + spacer_tag[1]
-        li_str = f"{spacer_str}[status]{sym}[/status] {t1}{li.text}{t2}"
-        li_strs.append(li_str)
+
+        txt = Markdown(li.text)
+        
+        li_els = [f"{spacer_str}[status]{sym}[/status]",txt]
+
+        due = None
+        priority = None
+        
+        for link in li.links:
+            if priority is None and "priority" in link.linked_metadata:
+                priority = link.linked_metadata["priority"]
+            if due is None and "due" in link.linked_metadata:
+                due = dateutil.parser.parse(link.linked_metadata["due"])
+            if priority is not None and due is not None: break
+
+        if due is not None:
+            format_str = "%Y-%d-%m"
+            if (due.hour != 0) or (due.minute != 0) or (due.second != 0) or (due.microsecond != 0):
+                format_str += " %I:%M %p"
+            due_str = due.strftime(format_str)
+            li_els += f"{metadata_symbols['due']}{due_str} "
+
+        if priority is not None:
+            li_els += f"{metadata_symbols['priority']}{priority}"
+        
+        li_strs.append(li_els)
         li_no += 1
 
-        for link in li.links:
-            for key, value in link.linked_metadata.items():
-                print(key, value)
         return True
         
     for p in pages:
@@ -64,4 +89,4 @@ def tasks(args, console: Console, config: dict):
         if len(li_strs) == 0: continue
         console.print(f"{page_title_tag[0]}{p.title}{page_title_tag[1]} ({page_link_tag[0]}{p.rel_path}{page_link_tag[1]})")
         for li_str in li_strs:
-            console.print(li_str)
+            console.print(*li_str)
