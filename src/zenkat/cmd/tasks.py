@@ -2,7 +2,7 @@ from zenkat import index
 import zenkat.filter
 import zenkat.objects
 from zenkat.utils import node_tree_dft
-from rich.console import Console
+from rich.console import Console, Group
 from rich.markdown import Markdown
 import dateutil
 import datetime
@@ -55,8 +55,13 @@ def tasks(args, console: Console, config: dict):
         spacer_str = spacer_tag[0] + (spacer * li.depth) + spacer_end + spacer_tag[1]
 
         txt = Markdown(li.text)
+        dead_console = Console(color_system=None)
+        with dead_console.capture() as c:
+            dead_console.print(txt)    
+        txt = c.get().strip()
+
         
-        li_els = [f"{spacer_str}[status]{sym}[/status]",txt]
+        li_str = f"{spacer_str}[status]{sym}[/status] {t1}{txt} "
 
         due = None
         priority = None
@@ -73,12 +78,13 @@ def tasks(args, console: Console, config: dict):
             if (due.hour != 0) or (due.minute != 0) or (due.second != 0) or (due.microsecond != 0):
                 format_str += " %I:%M %p"
             due_str = due.strftime(format_str)
-            li_els += f"{metadata_symbols['due']}{due_str} "
+            li_str += f"{metadata_symbols['due']}{due_str} "
 
         if priority is not None:
-            li_els += f"{metadata_symbols['priority']}{priority}"
-        
-        li_strs.append(li_els)
+            li_str += f"{metadata_symbols['priority']}{priority}"
+
+        li_str += t2
+        li_strs.append(li_str)
         li_no += 1
 
         return True
@@ -89,4 +95,4 @@ def tasks(args, console: Console, config: dict):
         if len(li_strs) == 0: continue
         console.print(f"{page_title_tag[0]}{p.title}{page_title_tag[1]} ({page_link_tag[0]}{p.rel_path}{page_link_tag[1]})")
         for li_str in li_strs:
-            console.print(*li_str)
+            console.print(li_str)
