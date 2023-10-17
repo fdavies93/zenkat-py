@@ -25,11 +25,11 @@ default_config = {
                 "due": "⏰",
                 "priority": "🚩"
             },
-            "tags": {
-                "done": ["[strike][i]","[/i][/strike]"],
-                "not done": ["[sub]","[/sub]"],
-                "cancelled": ["[alert][strike][i]","[/i][/strike][/alert]"],
-                "blocked": ["[alert]","[/alert]"]
+            "styles": {
+                "done": ["i","strike"],
+                "not done": ["white"],
+                "cancelled": ["red","strike","i"],
+                "blocked": ["red"]
             },
             "spacer_tag": ("", ""),
             "spacer": " ",

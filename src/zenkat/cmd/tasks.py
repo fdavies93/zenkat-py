@@ -3,6 +3,7 @@ import zenkat.filter
 import zenkat.objects
 from zenkat.utils import node_tree_dft
 from rich.console import Console, Group
+from rich.style import Style
 from rich.markdown import Markdown
 import dateutil
 import datetime
@@ -26,7 +27,7 @@ def tasks(args, console: Console, config: dict):
         pages = list(filter(page_filter, pages))
 
     status_symbols = config["theme"]["tasks"]["symbols"]
-    status_tags = config["theme"]["tasks"]["tags"]
+    status_styles = config["theme"]["tasks"]["styles"]
     spacer = config["theme"]["tasks"]["spacer"]
     spacer_tag = config["theme"]["tasks"]["spacer_tag"]
     spacer_end = config["theme"]["tasks"]["spacer_end"]
@@ -48,20 +49,21 @@ def tasks(args, console: Console, config: dict):
             return False
         nonlocal li_no, li_strs
         if li_limit > 0 and li_no > li_limit: return False
-        t1, t2 = "", ""
-        if li.status in status_tags:
-            t1, t2 = status_tags[li.status]
         sym = status_symbols.get(li.status)
         spacer_str = spacer_tag[0] + (spacer * li.depth) + spacer_end + spacer_tag[1]
 
-        txt = Markdown(li.text)
-        dead_console = Console(color_system=None)
-        with dead_console.capture() as c:
-            dead_console.print(txt)    
-        txt = c.get().strip()
-
+        txt_style = "none"
+        if li.status in status_styles:
+            txt_style = " ".join(status_styles[li.status])
+        txt = Markdown(li.text, style=txt_style)
+        # easy win, but not really in the spirit of being able to rice
+        # and format stuff accurately
+        # dead_console = Console(color_system=None)
+        # with dead_console.capture() as c:
+        #     dead_console.print(txt)    
+        # txt = c.get().strip()
         
-        li_str = f"{spacer_str}[status]{sym}[/status] {t1}{txt} "
+        li_els = [f"{spacer_str}[status]{sym}[/status]", txt]
 
         due = None
         priority = None
@@ -78,13 +80,19 @@ def tasks(args, console: Console, config: dict):
             if (due.hour != 0) or (due.minute != 0) or (due.second != 0) or (due.microsecond != 0):
                 format_str += " %I:%M %p"
             due_str = due.strftime(format_str)
-            li_str += f"{metadata_symbols['due']}{due_str} "
+            li_els.append(f"{metadata_symbols['due']}{due_str}")
 
         if priority is not None:
-            li_str += f"{metadata_symbols['priority']}{priority}"
+            li_els.append(f"{metadata_symbols['priority']}{priority}")
 
-        li_str += t2
-        li_strs.append(li_str)
+        rendered = []
+        for i, el in enumerate(li_els):
+            with console.capture() as c:
+                console.print(el)
+            out_str = c.get().replace("\n","")
+            rendered.append(out_str)
+
+        li_strs.append(" ".join(rendered).rstrip())
         li_no += 1
 
         return True
@@ -94,5 +102,5 @@ def tasks(args, console: Console, config: dict):
         node_tree_dft(p.lists_tree, "children", do_fn)
         if len(li_strs) == 0: continue
         console.print(f"{page_title_tag[0]}{p.title}{page_title_tag[1]} ({page_link_tag[0]}{p.rel_path}{page_link_tag[1]})")
-        for li_str in li_strs:
-            console.print(li_str)
+        for li_els in li_strs:
+            print(li_els)
