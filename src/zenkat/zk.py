@@ -13,7 +13,7 @@ def main():
     conf = config.load_config()
     console = Console(theme=Theme(conf["theme"]["colors"]))
 
-    cmd_map[args.command[0]](args, console, conf)
+    cmd_map[args.command](args, console, conf)
     
 if __name__ == "__main__":
     sys.exit(main())

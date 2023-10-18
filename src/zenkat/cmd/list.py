@@ -1,9 +1,26 @@
 from zenkat import filter, sort, format, index
 from rich.console import Console
+from argparse import ArgumentParser
+
+def make_ls_parser(parser: ArgumentParser):
+    parser.add_argument(
+        "corpus",
+        choices=("links","pages","tags"),
+    )
+    parser.add_argument('--path', type=str, default='.')
+    parser.add_argument("--quick-format","-F")
+    parser.add_argument("--format")
+    parser.add_argument("--filter","-f")
+    parser.add_argument("--sort", "-s")
+    parser.add_argument("--limit", "-l")
+    # maybe support recursive?
+    
 
 def ls(args, console: Console, config: dict):
+    
     idx = index.index(args.path, config)
-    corpus = args.command[1]
+    
+    corpus = args.corpus
 
     if corpus == "links":
         f_str = config["formats"]["default"]["list"]["links"]
@@ -14,9 +31,6 @@ def ls(args, console: Console, config: dict):
     elif corpus == "tags": 
         f_str = config["formats"]["default"]["list"]["tags"]
         data = idx.tags
-    elif corpus == "list_items":
-        f_str = config["formats"]["default"]["list"]["list_items"]
-        data = idx.list_items
     else: raise ValueError()
 
     quick_format = args.quick_format

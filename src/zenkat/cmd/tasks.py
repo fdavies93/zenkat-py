@@ -5,8 +5,15 @@ from zenkat.utils import node_tree_dft
 from rich.console import Console, Group
 from rich.style import Style
 from rich.markdown import Markdown
+from argparse import ArgumentParser
 import dateutil
 import datetime
+
+def make_task_parser(parser: ArgumentParser):
+    parser.add_argument('--path', type=str, default='.')
+    parser.add_argument("--filter","-f")
+    parser.add_argument("--limit","-l")
+    parser.add_argument("--page")
 
 def tasks(args, console: Console, config: dict):
     idx = index.index(args.path, config)
@@ -56,18 +63,14 @@ def tasks(args, console: Console, config: dict):
         if li.status in status_styles:
             txt_style = " ".join(status_styles[li.status])
         txt = Markdown(li.text, style=txt_style)
-        # easy win, but not really in the spirit of being able to rice
-        # and format stuff accurately
-        # dead_console = Console(color_system=None)
-        # with dead_console.capture() as c:
-        #     dead_console.print(txt)    
-        # txt = c.get().strip()
         
         li_els = [f"{spacer_str}[status]{sym}[/status]", txt]
 
         due = None
         priority = None
-        
+
+        # should this be created at index time and 'lifted' to the list item? yes.
+        # but there shouldn't be a task item indexed because there's little reason to separate it from mainline lists
         for link in li.links:
             if priority is None and "priority" in link.linked_metadata:
                 priority = link.linked_metadata["priority"]
@@ -76,7 +79,7 @@ def tasks(args, console: Console, config: dict):
             if priority is not None and due is not None: break
 
         if due is not None:
-            format_str = "%Y-%d-%m"
+            format_str = "%Y-%m-%d"
             if (due.hour != 0) or (due.minute != 0) or (due.second != 0) or (due.microsecond != 0):
                 format_str += " %I:%M %p"
             due_str = due.strftime(format_str)

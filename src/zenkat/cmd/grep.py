@@ -1,10 +1,18 @@
 from zenkat import index, extract, filter
 from rich.console import Console
 from dataclasses import dataclass
+from argparse import ArgumentParser
+
+def make_grep_parser(parser: ArgumentParser):
+    parser.add_argument("pattern")
+    parser.add_argument('--path', type=str, default='.')
+    parser.add_argument("--filter","-f")
+    parser.add_argument("--limit", "-l")
+    # AWESOME scope for adding different types of pattern match flags (case-sensitive, exact match, etc here)
 
 def grep(args, console: Console, config: dict):
     idx = index.index(args.path, config)
-    regexp = args.command[1]
+    regexp = args.pattern
     data = idx.pages
 
     filter_strs = []

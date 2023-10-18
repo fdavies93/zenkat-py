@@ -63,9 +63,10 @@ default_config = {
         }
     },
     "macros": {
-        "list_pages": "list pages --sort 'word_count desc'",
+        "list_pages": "list pages --sort 'word_count asc'",
         "stack_overflow": "macro stack_overflow"
     },
     "queries": {
+        "list": "list pages"
     }
 }

@@ -1,6 +1,11 @@
 from rich.console import Console
 from zenkat import index, utils, objects
 import zenkat.filter
+from argparse import ArgumentParser
+
+def make_outline_parser(parser: ArgumentParser):
+    parser.add_argument('--path', type=str, default='.')
+    parser.add_argument("--filter","-f")
 
 def outline(args, console: Console, config: dict):
     idx = index.index(args.path, config)

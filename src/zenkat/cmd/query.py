@@ -1,13 +1,21 @@
 import zenkat.query
 import zenkat.format
 from rich.console import Console
+from argparse import ArgumentParser
+
+def make_query_parser(parser: ArgumentParser):
+    parser.add_argument('--path', type=str, default='.')
+    parser.add_argument("--query-inline","-q")
+    parser.add_argument("query", nargs="?")
+    parser.add_argument("--quick-format","-F")
+    parser.add_argument("--format")
 
 def query(args, console: Console, config: dict):
     idx = zenkat.index.index(args.path, config)
-    if len(args.command) > 1 and config["queries"].get(args.command[1]) != None:
-        query_str = config["queries"].get(args.command[1])
-    elif args.query != None:
-        query_str = args.query
+    if args.query != None and config["queries"].get(args.query) != None:
+        query_str = config["queries"].get(args.query)
+    elif args.query_inline != None:
+        query_str = args.query_inline
     else:        
         raise ValueError("Must use the -q / --query flag when calling query or call a saved query from config.queries")
     output = zenkat.query.parse_query(query_str, idx)
