@@ -12,6 +12,7 @@ def create_parser():
     parser = argparse.ArgumentParser(prog="zenkat", description="Zenkat: Library and CLI to use plain markdown files as a Zettelkasten knowledge store.")
     # parser.add_argument('command', nargs="+", help=cmd_help)
     command_parser = parser.add_subparsers(title="command", dest="command")
+    command_parser.required = True
     list_parser = command_parser.add_parser("list")
     make_ls_parser(list_parser)
     
