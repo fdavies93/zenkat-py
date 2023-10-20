@@ -28,9 +28,9 @@ def tasks(args, console: Console, config: dict):
 
     li_filter = None
     if len(filter_strs) > 0:
-        li_filter = zenkat.filter.parse_filter(filter_strs[0], zenkat.objects.ListItem)
+        li_filter = zenkat.filter.interpret_filter(filter_strs[0], zenkat.objects.ListItem)
     if args.page != None:
-        page_filter = zenkat.filter.parse_filter(args.page, zenkat.objects.Page)
+        page_filter = zenkat.filter.interpret_filter(args.page, zenkat.objects.Page)
         pages = list(filter(page_filter, pages))
 
     status_symbols = config["theme"]["tasks"]["symbols"]

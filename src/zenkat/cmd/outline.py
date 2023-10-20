@@ -18,7 +18,7 @@ def outline(args, console: Console, config: dict):
     if args.filter != None:
         filter_strs = args.filter
 
-    filters = [zenkat.filter.parse_filter(f, objects.Heading) for f in filter_strs]
+    filters = [zenkat.filter.interpret_filter(f, objects.Heading) for f in filter_strs]
     
     def print_node(node: objects.Heading):
         for f in filters:

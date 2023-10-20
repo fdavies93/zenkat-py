@@ -19,7 +19,7 @@ def grep(args, console: Console, config: dict):
     if args.filter != None:
         filter_strs = args.filter
 
-    filters = [filter.parse_filter(f, data[0]) for f in filter_strs]
+    filters = [filter.interpret_filter(f, data[0]) for f in filter_strs]
     filtered = filter.filter_objs(data, filters)
 
     limit_no = -1

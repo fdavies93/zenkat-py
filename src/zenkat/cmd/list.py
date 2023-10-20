@@ -40,10 +40,9 @@ def ls(args, console: Console, config: dict):
     if args.format != None:
         f_str = args.format
 
+    filters = []
     if args.filter != None:
-        filters = [filter.parse_filter(args.filter, data[0])]
-        parsed = filter.parse_filter_str(args.filter, data[0])
-        print(parsed)
+        filters = [filter.parse_filter_str(args.filter, data[0])]
 
     filtered = filter.filter_objs(data, filters)
     
