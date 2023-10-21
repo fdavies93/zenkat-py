@@ -34,6 +34,6 @@ def grep(args, console: Console, config: dict):
         for match in matches:
             console.print(f"[info]{match.line_no}[/info] {match.context}")
             match_no += 1
-            if limit_no > -1 and match_no > limit_no:
+            if limit_no > -1 and match_no >= limit_no:
                 return
         console.print("")
