@@ -14,7 +14,8 @@ def parse_query(query: str, index: Index) -> QueryData:
     clauses = {
         "format": [],
         "where": [],
-        "sort": []
+        "sort": [],
+        "limit": []
     }
     cur_clause = "format"
     acc = []
@@ -44,6 +45,10 @@ def parse_query(query: str, index: Index) -> QueryData:
     if len(clauses["sort"]) != 0:
         if len(clauses["sort"]) != 2: raise ValueError("Sort clause must have 2 arguments e.g. sort word_count asc")
         data = sort_from_query(data, " ".join(clauses["sort"]))
+    if len(clauses["limit"]) != 0:
+        limit = int(clauses["limit"][0])
+        if limit > 0: data = data[:limit]
+        if limit < 0: data = data[-limit:]
 
     output.results = data
     return output
