@@ -1,4 +1,4 @@
-from zenkat import filter, sort, format, index
+from zenkat import filter, sort, format, index, group
 from rich.console import Console
 from argparse import ArgumentParser
 
@@ -12,6 +12,7 @@ def make_ls_parser(parser: ArgumentParser):
     parser.add_argument("--format")
     parser.add_argument("--filter","-f")
     parser.add_argument("--sort", "-s")
+    parser.add_argument("--group", "-g")
     parser.add_argument("--limit", "-l")
     # maybe support recursive?
     
@@ -48,6 +49,9 @@ def ls(args, console: Console, config: dict):
     
     if args.sort != None:
         filtered = sort.sort_from_query(filtered, args.sort)
+
+    if args.group != None:
+        filtered = group.group(filtered,args.group)
 
     if args.limit != None:
         limit_no = int(args.limit)
