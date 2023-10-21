@@ -1,4 +1,4 @@
-from zenkat.filter import interpret_filter, filter_objs
+from zenkat.filter import interpret_filter, filter_objs, parse_filter_str
 from zenkat.sort import sort_from_query
 from zenkat.objects import Index
 from dataclasses import dataclass, field
@@ -39,8 +39,7 @@ def parse_query(query: str, index: Index) -> QueryData:
     if len(clauses["format"]) > 2: output.format_str = " ".join(clauses["format"][2:])
     # filter by objs
     if len(clauses["where"]) != 0 and len(data) > 0:
-        if len(clauses["where"]) not in (3,4): raise ValueError("Filter clause must have 3-4 arguments. e.g. where rel_path has business")
-        filter = interpret_filter(" ".join(clauses["where"]), data[0])
+        filter = parse_filter_str(" ".join(clauses["where"]), data[0])
         data = filter_objs(data, [filter])
     if len(clauses["sort"]) != 0:
         if len(clauses["sort"]) != 2: raise ValueError("Sort clause must have 2 arguments e.g. sort word_count asc")
