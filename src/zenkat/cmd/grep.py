@@ -1,4 +1,4 @@
-from zenkat import index, extract, filter
+from zenkat import index, extract, filter, objects
 from rich.console import Console
 from dataclasses import dataclass
 from argparse import ArgumentParser
@@ -15,20 +15,16 @@ def grep(args, console: Console, config: dict):
     regexp = args.pattern
     data = idx.pages
 
-    filter_strs = []
+    filters = []
     if args.filter != None:
-        filter_strs = args.filter
-
-    filters = [filter.interpret_filter(f, data[0]) for f in filter_strs]
+        filter_str = args.filter
+        filters = [filter.parse_filter_str(filter_str, objects.Page)]
+    
     filtered = filter.filter_objs(data, filters)
 
     limit_no = -1
     if args.limit != None:
         limit_no = int(args.limit)
-    # context = 3
-    # # how many words around the regexp to return
-    # if args.context != None:
-    #     context = int(args.context)
     match_no = 0
 
     for page in filtered:
