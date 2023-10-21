@@ -1,0 +1,9 @@
+# catpuccin-mocha
+
+"alert" = "#f38ba8"
+"main" = "#cba6f7 bold"
+"sub" = "#a6adc8"
+"link" = "#f5c2e7 underline"
+"info" = "#f9e2af"
+"info2" = "#a6e3a1"
+"status" = "#89b4fa"
