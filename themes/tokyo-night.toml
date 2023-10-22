@@ -1,0 +1,15 @@
+# tokyo night
+
+green = "#00ffd2"
+pink = "#ff4499"
+black = "#000000"
+blue0 = "#0a0047"
+blue1 = "#004687"
+
+alert = "#00ffd2 bold"
+info = "#ff4499 bold"
+info2 = "#ff4499"
+link = "#00ffd2 underline"
+main = "white bold"
+sub = "white"
+status = "#004687 bold"
