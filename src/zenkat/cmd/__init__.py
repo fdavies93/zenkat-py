@@ -6,3 +6,4 @@ from zenkat.cmd.macro import macro
 from zenkat.cmd.outline import outline
 from zenkat.cmd.tasks import tasks
 from zenkat.cmd.query import query
+from zenkat.cmd.echo import echo

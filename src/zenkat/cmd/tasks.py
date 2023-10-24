@@ -21,6 +21,10 @@ def make_task_parser(parser: ArgumentParser):
     parser.add_argument("--limit","-l")
     parser.add_argument("--page")
 
+# TODO
+# move resolution of links in list items to index function
+# change rendering to use render module
+
 def tasks(args, console: Console, config: dict):
     idx = index.index(args.path, config)
     # the first filter applies to the tasks

@@ -6,6 +6,7 @@ from zenkat.cmd.grep import make_grep_parser
 from zenkat.cmd.query import make_query_parser
 from zenkat.cmd.outline import make_outline_parser
 from zenkat.cmd.cat import make_cat_parser
+from zenkat.cmd.echo import make_echo_parser
 
 def create_parser():
     
@@ -30,6 +31,9 @@ def create_parser():
     
     cat_parser = command_parser.add_parser("cat")
     make_cat_parser(cat_parser)
+
+    echo_parser = command_parser.add_parser("echo")
+    make_echo_parser(echo_parser)
     
     from zenkat.cmd.macro import make_macro_parser
     # macros call create_parser so this would be recursive if not imported inline
@@ -45,5 +49,6 @@ def get_cmd_map():
         'query': cmd.query,
         'tasks': cmd.tasks,
         'macro': cmd.macro,
-        'outline': cmd.outline
+        'outline': cmd.outline,
+        'echo': cmd.echo
     }
