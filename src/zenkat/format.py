@@ -112,17 +112,46 @@ def parse_styles(tokens: list[str], styles = set()) -> tuple[Block, list[str]]:
 
     return (Block(cur_styles, children), remaining)
 
+def combine_shortname_styles(styles: set[str], short_names: dict):
+    output_styles: set(str) = set()
+    for s in styles:
+        if s in short_names:
+            short = short_names[s]
+            if isinstance(short, str): short = short.split()
+            output_styles = output_styles.union(short)
+            continue
+        output_styles.add(s)
+    return output_styles
+
 def render_to_console_str(root: Block, console: Console, short_names: dict = {}) -> str:
     output_str = ""
+
+    for segment in root.children:
+        if isinstance(segment, Block):
+            output_str += render_to_console_str(segment, console, short_names)
+        elif isinstance(segment, str):
+            # needs to expand styles with shortname
+
+            styles = combine_shortname_styles(set(root.styles), short_names)
+            
+            md = Markdown(segment, style=" ".join(styles))
+            with console.capture() as cap:
+                console.print(md, end="", sep="")
+            rendered = cap.get()
+            
+            rendered = " ".join(rendered.split())
+            
+            output_str = " ".join( (output_str, rendered ) )
+    
     return output_str
     
 
-def format(f_str, obj):
+def format(f_str, obj, console: Console, short_names: dict):
     replaced = replace_from(obj, f_str)
     lexed = lex_styles(replaced)
-    print(lexed)
     parsed = parse_styles(lexed)
-    return parsed
+    rendered = render_to_console_str(parsed[0], console, short_names)
+    return rendered
 
 
 def format_list(objs : list, f_str : str):
