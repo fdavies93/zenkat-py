@@ -13,6 +13,8 @@ default_config = {
             "repr.path": "white default"
         },
         "tasks": {
+            "page_format": "{:main:} {{ title }} {:end:} ({:link:}{{rel_path}}{:end:}) ",
+            "task_format": "{{spacer}}{{spacer_head}}{{status_symbol}} {{text}}",
             "symbols": {
                 "done": "✅",
                 "not done": "⬜",
@@ -31,11 +33,8 @@ default_config = {
                 "cancelled": ["red","strike","i"],
                 "blocked": ["red"]
             },
-            "spacer_tag": ("", ""),
             "spacer": " ",
             "spacer_end": "",
-            "page_title_tag": ("[info]", "[/info]"),
-            "page_link_tag": ("[link]", "[/link]")
         }
     },
     "formats": {
