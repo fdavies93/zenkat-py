@@ -128,10 +128,16 @@ def render_to_console_str(root: Block, console: Console, short_names: dict = {})
 
             styles = combine_shortname_styles(set(root.styles), short_names)
 
+            i = 0
+            whitespace_l = ""
+            while i < len(segment) and segment[i] in "\n\t\r ":
+                whitespace_l += segment[i]
+                i += 1
+
             i = len(segment)-1
-            whitespace = ""
+            whitespace_r = ""
             while i >= 0 and segment[i] in "\n\t\r ":
-                whitespace = segment[i] + whitespace
+                whitespace_r = segment[i] + whitespace_r
                 i -= 1
             
             
@@ -141,7 +147,9 @@ def render_to_console_str(root: Block, console: Console, short_names: dict = {})
             rendered = cap.get()
             rendered = rendered.rstrip()
             # restore whitespace prior to render
-            rendered += whitespace
+            rendered += whitespace_r
+            if whitespace_l != whitespace_r:
+                rendered = whitespace_l + rendered
             
             output_str = "".join( (output_str, rendered ) )
             output_str = output_str
