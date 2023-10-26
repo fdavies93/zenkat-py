@@ -41,7 +41,6 @@ def replace_from(obj, f_str: str):
 
     before = f_str[start_i:]
     new_str += before
-    print(new_str)
     
     return new_str
 
@@ -123,16 +122,24 @@ def render_to_console_str(root: Block, console: Console, short_names: dict = {})
             # needs to expand styles with shortname
 
             styles = combine_shortname_styles(set(root.styles), short_names)
+
+            i = len(segment)-1
+            whitespace = ""
+            while i >= 0 and segment[i] in "\n\t\r ":
+                whitespace = segment[i] + whitespace
+                i -= 1
+            
             
             md = Markdown(segment, style=" ".join(styles))
             with console.capture() as cap:
                 console.print(md, end="", sep="")
             rendered = cap.get()
+            rendered = rendered.rstrip()
+            # restore whitespace prior to render
+            rendered += whitespace
             
-            rendered = " ".join(rendered.split())
-            
-            output_str = " ".join( (output_str, rendered ) )
-            output_str = output_str.strip()
+            output_str = "".join( (output_str, rendered ) )
+            output_str = output_str
     
     return output_str
     
@@ -141,7 +148,6 @@ def format(f_str, obj, console: Console, short_names: dict):
     replaced = replace_from(obj, f_str)
     lexed = lex_styles(replaced)
     parsed = parse_styles(lexed)
-    print(parsed)
     rendered = render_to_console_str(parsed[0], console, short_names)
     return rendered
 
