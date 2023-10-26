@@ -89,8 +89,13 @@ def parse_styles(tokens: list[str], styles = set()) -> tuple[Block, list[str]]:
             if style_names[0] == "end":
                 remaining = remaining[1:]
                 break
+
+            child_styles = set(style_names)
+            if "reset" not in child_styles:
+                child_styles = child_styles.union(styles)
+            else: child_styles.remove("reset")
             # include the starting tag so that the child can set its styles from it
-            child = parse_styles(remaining[1:], set(style_names).union(styles))
+            child = parse_styles(remaining[1:], child_styles)
             children.append(child[0])
             remaining = child[1]
             continue
