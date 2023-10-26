@@ -36,7 +36,7 @@ def replace_from(obj, f_str: str):
         new_str += before
         start_i = match.end()
         if replacements[cur_tag] != None:
-            new_str += replacements[cur_tag]
+            new_str += str(replacements[cur_tag])
         cur_tag += 1
 
     before = f_str[start_i:]
@@ -78,16 +78,6 @@ def parse_styles(tokens: list[str], styles = set()) -> tuple[Block, list[str]]:
     children: list[Union[Block, str]] = []
     remaining = deepcopy(tokens)
     
-
-    next = remaining[0]
-    next_match = pattern.match(next)
-
-    if next_match is not None:
-        # i.e. it's a tag
-        style_names = next_match.group(1).split()
-        cur_styles = styles.union(set(style_names))         
-        remaining = remaining[1:]
-
     while len(remaining) > 0:
         # break if you discover an end tag
         next = remaining[0]
@@ -101,7 +91,7 @@ def parse_styles(tokens: list[str], styles = set()) -> tuple[Block, list[str]]:
                 remaining = remaining[1:]
                 break
             # include the starting tag so that the child can set its styles from it
-            child = parse_styles(remaining, set(style_names).union(styles))
+            child = parse_styles(remaining[1:], set(style_names).union(styles))
             children.append(child[0])
             remaining = child[1]
             continue
@@ -142,6 +132,7 @@ def render_to_console_str(root: Block, console: Console, short_names: dict = {})
             rendered = " ".join(rendered.split())
             
             output_str = " ".join( (output_str, rendered ) )
+            output_str = output_str.strip()
     
     return output_str
     
@@ -150,6 +141,7 @@ def format(f_str, obj, console: Console, short_names: dict):
     replaced = replace_from(obj, f_str)
     lexed = lex_styles(replaced)
     parsed = parse_styles(lexed)
+    print(parsed)
     rendered = render_to_console_str(parsed[0], console, short_names)
     return rendered
 

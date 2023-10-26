@@ -60,5 +60,7 @@ def ls(args, console: Console, config: dict):
         elif limit_no < 0:
             filtered = filtered[limit_no:]
 
-    ls = format.format_list(filtered, f_str)
-    for line in ls: console.print(line)
+    
+    ls = [format.format(f_str,obj,console,config["theme"]["colors"]) for obj in filtered]
+    
+    for line in ls: print(line)
