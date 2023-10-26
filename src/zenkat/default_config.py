@@ -42,9 +42,8 @@ default_config = {
         "default": {
             "list": {
                 "pages": "{: info :}[↓{{in_link_count}} ↑{{out_link_count}}] {: end info :}{: main :}{{title}}{: end main :}, {: sub :}{{word_count}} words ({: link reset :}{{rel_path}}{: end link :}){: end sub :}",
-                "links": "[link]{doc_abs_path}[/link] → [link]{href_resolved}[/link]",
-                "tags": "[info][{count} pages][/info] [main]{name}[/main]",
-                "list_items": "[link]{doc_title}[/link]\n[info]({type})[/info] {text}"
+                "links": "{: link :}{{doc_abs_path}}{: end link :} → {: link :}{{href_resolved}}{: end link :}",
+                "tags": "{: info :}[{{count}} pages]{: end info :} {:main:}{{name}}{: end main :}",
             }
         },
         "outline": {
