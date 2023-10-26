@@ -86,7 +86,7 @@ def parse_styles(tokens: list[str], styles = set()) -> tuple[Block, list[str]]:
             # i.e. it's a tag        
             style_names = next_match.group(1).split()
             # allows end tag to have syntactic sugar names
-            if style_names[0] == "end":
+            if len(style_names) > 0 and style_names[0] == "end":
                 remaining = remaining[1:]
                 break
 

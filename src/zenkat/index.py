@@ -21,7 +21,12 @@ def resolve_links(links : list[Link], path : Path):
     for l in links:
         # probably need to check if it's a uri or a local link
         # uri cannot be resolved
-        matches = list(path.glob(f"{l.href}.*"))
+        try:
+            matches = list(path.glob(f"{l.href}.*"))
+        except Exception:
+            # bad link
+            return out
+
         if len(matches) > 0:
             # ignores multiple matches rather than throwing error
             out.append(Link(

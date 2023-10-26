@@ -14,7 +14,7 @@ default_config = {
         },
         "tasks": {
             "page_format": "{:main:} {{ title }} {:end:} ({:link:}{{rel_path}}{:end:}) ",
-            "task_format": "{{spacer}}{{spacer_head}}{{status_symbol}} {{text}}",
+            "task_format": "{{spacer}}{{spacer_head}}{{status_symbol}} {:{{status_style}}:}{{text}}{: end :}",
             "symbols": {
                 "done": "✅",
                 "not done": "⬜",
@@ -33,7 +33,7 @@ default_config = {
                 "cancelled": ["red","strike","i"],
                 "blocked": ["red"]
             },
-            "spacer": " ",
+            "spacer":" ",
             "spacer_end": "",
         }
     },

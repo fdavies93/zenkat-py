@@ -90,7 +90,7 @@ def tasks(args, console: Console, config: dict):
             status_symbol = status_symbols.get(li.status)
 
             if li.status in status_styles:
-                status_str = status_styles[li.status]
+                status_str = " ".join(status_styles[li.status])
 
             nonlocal spacer, spacer_end
             spacer_str = spacer * li.depth
