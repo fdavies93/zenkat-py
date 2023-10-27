@@ -4,11 +4,16 @@ import time
 from argparse import ArgumentParser
 
 def make_macro_parser(parser: ArgumentParser):
-    parser.add_argument("name")
+    parser.add_argument("name", nargs="?")
     parser.add_argument("--recursive","-r")
 
 def macro(args, console, config):
     macro_name = args.name
+
+    if macro_name == None:
+        print("\n".join(config["macros"].keys()))
+        return
+
     macro_str = config["macros"][macro_name]
     macro_arg_str = shlex.split(macro_str)
     parser = create_parser()
