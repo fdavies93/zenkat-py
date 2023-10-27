@@ -1,5 +1,5 @@
 # catpuccin-mocha
-
+[theme.colors]
 "alert" = "#f38ba8"
 "main" = "#cba6f7 bold"
 "sub" = "#a6adc8"

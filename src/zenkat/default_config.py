@@ -8,9 +8,6 @@ default_config = {
             "link": "blue underline",
             "sub": "white default",
             "status": "yellow bold",
-            "repr.number": "white default",
-            "repr.str": "white default",
-            "repr.path": "white default"
         },
         "tasks": {
             "page_format": "{:main:} {{ title }} {:end:} ({:link:}{{rel_path}}{:end:}) ",
@@ -41,7 +38,7 @@ default_config = {
         "default": {
             "list": {
                 "pages": "{: info :}[↓{{in_link_count}} ↑{{out_link_count}}] {: end info :}{: main :}{{title}}{: end main :}, {: sub :}{{word_count}} words ({: link reset :}{{rel_path}}{: end link :}){: end sub :}",
-                "links": "{: link :}{{doc_abs_path}}{: end link :} → {: link :}{{href_resolved}}{: end link :}",
+                "links": "{: link :}{{doc_abs_path}}{: end :} => {: link :}{{href_resolved}}{: end :}",
                 "tags": "{: info :}[{{count}} pages]{: end info :} {:main:}{{name}}{: end main :}",
             }
         },
@@ -62,7 +59,18 @@ default_config = {
     },
     "macros": {
         "list_pages": "list pages --sort 'word_count asc'",
-        "stack_overflow": "macro stack_overflow"
+        "stack_overflow": "macro stack_overflow",
+        "demo": "\n".join([
+            "echo '",
+            "{:alert:}Alert sample{:end:}",
+            "{:info:}Info sample{:end:}",
+            "{:info2:}Info 2 sample{:end:}",
+            "{:link:}Link sample{:end:}",
+            "{:main:}Main sample{:end:}",
+            "{:sub:}Sub sample{:end:}",
+            "{:status:}Status sample{:end:}'",
+        ]),
+        
     },
     "queries": {
         "list": "list pages"

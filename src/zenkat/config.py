@@ -18,6 +18,7 @@ def adjust_config(original, adjuster):
 def load_config() -> dict:
     # load config from an escalating series of paths or default
     paths = [Path.home() / ".config/zenkat/config.toml"]
+    theme_path = (Path(__file__) / "../../../themes").resolve()
     # default settings
     config = default_config
     for path in paths:
@@ -26,4 +27,12 @@ def load_config() -> dict:
         with open(path, "rb") as f:
             new_config = tomllib.load(f)
         config = adjust_config(config, new_config)
+
+        theme_preset = str(config.get("theme_preset"))
+        if theme_preset is None: continue
+
+        with open(theme_path / theme_preset,"rb") as f:
+            new_config = tomllib.load(f)
+        config = adjust_config(config,new_config)
+            
     return config

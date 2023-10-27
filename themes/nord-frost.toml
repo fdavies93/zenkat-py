@@ -1,6 +1,6 @@
 # nord theme
-
-alert = "#bf616a"
+[theme.colors]
+alert = "#bf616a bold"
 info2 = "#81a1c1"
 info = "#88c0d0 bold"
 link = "default #8fbcbb underline"
