@@ -62,7 +62,7 @@ def lex_styles(f_str):
         
         last_i = match.end()
 
-    if last_i < len(f_str) - 1:
+    if last_i < len(f_str):
         tokens.append(f_str[last_i:])
 
     return tokens
