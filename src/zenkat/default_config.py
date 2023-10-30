@@ -40,6 +40,7 @@ default_config = {
                 "pages": "{: info :}[↓{{in_link_count}} ↑{{out_link_count}}] {: end info :}{: main :}{{title}}{: end main :}, {: sub :}{{word_count}} words ({: link reset :}{{rel_path}}{: end link :}){: end sub :}",
                 "links": "{: link :}{{doc_abs_path}}{: end :} => {: link :}{{href_resolved}}{: end :}",
                 "tags": "{: info :}[{{count}} pages]{: end info :} {:main:}{{name}}{: end main :}",
+                "group_line": "---\n{:info:}{{group_name}} - {{group_value}}{:end:}\n---"
             }
         },
         "outline": {
