@@ -51,11 +51,15 @@ def ls(args, console: Console, config: dict):
     if args.sort != None:
         filtered = sort.sort_from_query(filtered, args.sort)
 
+    # if args.group != None:
+        # grouped = group.group(filtered, args.group)
+        # filtered = []
+        # for key, objs in grouped.items():
+        #     filtered.extend([{"group_name": args.group,"group_value": key, "object": obj} for obj in objs]) 
+
     if args.group != None:
         grouped = group.group(filtered, args.group)
-        filtered = []
-        for key, objs in grouped.items():
-            filtered.extend([{"group_name": args.group,"group_value": key, "object": obj} for obj in objs]) 
+        filtered = group.flatten(args.group, grouped) 
 
     if args.limit != None:
         limit_no = int(args.limit)
@@ -65,23 +69,13 @@ def ls(args, console: Console, config: dict):
             filtered = filtered[limit_no:]
 
     ls = []
+    colors = config["theme"]["colors"]
     if args.group != None:
         group_str = config["formats"]["default"]["list"]["group_line"] 
-        listed: set = set()
-        for joined in filtered:
-            val = joined["group_value"]
-            if val not in listed:
-                listed.add(val)
-                ln = format.format(group_str, {"group_name": args.group, "group_value": val}, console, config["theme"]["colors"])
-                ls.append(ln)
-            ln = format.format(f_str, joined["object"], console, config["theme"]["colors"])
-            ls.append(ln)
-   
+        ls = format.format_grouped_list(f_str, group_str, filtered, console, colors)
+        print(ls)
     else:
-        ls = [
-            format.format(f_str, obj, console, config["theme"]["colors"])
-        for obj in filtered
-        ]
+       ls = format.format_list(filtered, f_str, console, colors)
 
     for line in ls:
         print(line)

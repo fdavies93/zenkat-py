@@ -41,7 +41,7 @@ default_config = {
                 "links": "{: link :}{{doc_abs_path}}{: end :} ➜ {: link :}{{href_resolved}}{: end :}",
                 "tags": "{: info :}[{{count}} pages]{: end info :} {:main:}{{name}}{: end main :}",
 
-                "group_line": "---\n{:info:}{{group_name}} - {{group_value}}{:end:}\n---"
+                "group_line": "{:sub:}---{:end:}\n{:info:}{{group_name}} - {{group_value}}{:end:}\n{:sub:}---{:end:}"
             },
             "themes": {
                 "list": "{:main:}{{name}}{:end:} ({:link:}{{rel_path}}{:end:})"

@@ -1,5 +1,6 @@
 import zenkat.query
 import zenkat.format
+from zenkat.group import GroupedListItem
 from rich.console import Console
 from argparse import ArgumentParser
 
@@ -45,6 +46,15 @@ def query(args, console: Console, config: dict):
     if args.format != None:
         f_str = args.format
 
-    ls = zenkat.format.format_list(output.results, f_str)
+    if len(output.results) <= 0: return
+
+    colors = config["theme"]["colors"]
+
+    
+    if isinstance(output.results[0],GroupedListItem):
+        gf_str = config["formats"]["default"]["list"]["group_line"]
+        ls = zenkat.format.format_grouped_list(f_str, gf_str,output.results,console, colors)  
+    else:
+        ls = zenkat.format.format_list(output.results, f_str, console, colors)
     for line in ls:
-        console.print(line)
+        print(line)

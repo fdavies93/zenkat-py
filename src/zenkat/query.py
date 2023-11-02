@@ -1,7 +1,9 @@
 from zenkat.filter import interpret_filter, filter_objs, parse_filter_str
 from zenkat.sort import sort_from_query
 from zenkat.objects import Index
+from zenkat.group import group, flatten
 from dataclasses import dataclass, field
+
 
 @dataclass
 class QueryData:
@@ -11,14 +13,15 @@ class QueryData:
     corpus: str = ""
 
 def parse_query(query: str, index: Index) -> QueryData:
-    clauses = {
+    clauses: dict = {
         "format": [],
         "where": [],
         "sort": [],
-        "limit": []
+        "group": [],
+        "limit": [],
     }
     cur_clause = "format"
-    acc = []
+    acc: list = []
     # split into clauses
     words = query.split()
     for word in words:
@@ -49,6 +52,10 @@ def parse_query(query: str, index: Index) -> QueryData:
         limit = int(clauses["limit"][0])
         if limit > 0: data = data[:limit]
         if limit < 0: data = data[-limit:]
+    if len(clauses["group"]) > 0:
+        field = clauses["group"][0] 
+        data = group(data, field)
+        data = flatten(field, data)
 
     output.results = data
     return output

@@ -6,6 +6,7 @@ from copy import deepcopy
 from rich.markdown import Markdown
 from rich.console import Console
 from zenkat.utils import node_tree_dft
+from zenkat.group import GroupedListItem
 
 # figure out process for rendering ALL segments of a string from a format string via rich and later assembling them
 # USE OWN TEMPLATING LANGUAGE / JINJA LIKE SYNTAX
@@ -165,15 +166,17 @@ def format(f_str, obj, console: Console, short_names: dict):
     return rendered
 
 
-def format_list(objs : list, f_str : str):
-    outputs = []
-    pattern = "{([\w\.\*&]+)}"    
-    for o in objs:
-        templates = re.findall(pattern, f_str)
-        replacements = [fields.get_field_fn(o,t) for t in templates]
-        cur_str = re.sub(pattern, "{}", f_str)
-        cur_str = cur_str.format(*replacements)                    
-        outputs.append(cur_str)
-        
+def format_list(objs : list, f_str : str, console: Console, short_names: dict):
+    outputs = [format(f_str, obj, console, short_names) for obj in objs]
     return outputs
 
+def format_grouped_list(f_str: str, gf_str: str, grouped_list: list[GroupedListItem], console: Console, short_names: dict):
+    ls: list[str] = []
+    seen: set[str] = set()
+    # list should be pre-flattened
+    for li in grouped_list:
+        if li.group_value not in seen:
+            ls.append(format(gf_str, li, console, short_names)) 
+            seen.add(li.group_value)
+        ls.append(format(f_str, li.obj, console, short_names))
+    return ls
