@@ -42,7 +42,7 @@ def replace_from(obj, f_str: str):
 
     before = f_str[start_i:]
     new_str += before
-    
+        
     return new_str
 
 def lex_styles(f_str):
@@ -142,17 +142,18 @@ def render_to_console_str(root: Block, console: Console, short_names: dict = {})
                 i -= 1
             
             
-            md = Markdown(segment, style=" ".join(styles))
+            # md = Markdown(segment, style=" ".join(styles))
+            md = segment
             with console.capture() as cap:
-                console.print(md, end="", sep="")
+                console.print(md, style = " ".join(styles), end="", sep="")
             rendered = cap.get()
-            rendered = rendered.rstrip()
+            rendered = rendered.strip()
             # restore whitespace prior to render
             rendered += whitespace_r
             if whitespace_l != whitespace_r:
                 rendered = whitespace_l + rendered
             
-            output_str = "".join( (output_str, rendered ) )
+            output_str = "".join( (output_str, segment ) )
             output_str = output_str
     
     return output_str

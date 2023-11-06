@@ -39,7 +39,7 @@ def parse_query(query: str, index: Index) -> QueryData:
     output.format_type = clauses["format"][0]
     output.corpus = clauses["format"][1]
     data = index.__dict__.get(clauses["format"][1])
-    if data == None: raise ValueError(f"No collection called {clauses[1]}!")
+    if data == None: raise ValueError(f"No collection called {clauses[1]}!") 
     if len(clauses["format"]) > 2: output.format_str = " ".join(clauses["format"][2:])
     # filter by objs
     if len(clauses["where"]) != 0 and len(data) > 0:
