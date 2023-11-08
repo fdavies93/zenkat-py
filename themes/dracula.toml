@@ -15,7 +15,15 @@ yellow = "#f1fa8c"
 alert = "#ff5555"
 info = "#bd93f9 bold"
 info2 = "#bd93f9"
-link = "#6272a4 underline"
+link = "#ff79c6 underline"
 main = "#50fa7b"
 sub = "#f8f8f2"
 status = "#8be9fd"
+
+[theme.tasks.styles]
+
+"done" = ["strike","#6272a4"]
+"not done" = ["#f8f8f2"]
+"cancelled" = ["#44475a","strike"]
+"blocked" = ["#bd93f9"]
+
