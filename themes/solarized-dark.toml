@@ -16,3 +16,18 @@ violet = "#6c71c4"
 blue = "#268bd2"
 cyan = "#2aa198"
 green = "#859900"
+
+alert = "#d33682"
+main = "#eee8d5 bold"
+sub = "#eee8d5"
+link = "#cb4b16 underline"
+info = "#2aa198 bold"
+info2 = "#2aa198"
+
+[theme.tasks.styles]
+
+"done" = ["strike","#859900"]
+"not done" = ["#eee8d5"]
+"cancelled" = ["#d33682","strike"]
+"blocked" = ["#6c71c4"]
+
