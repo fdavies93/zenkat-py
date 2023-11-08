@@ -140,20 +140,19 @@ def render_to_console_str(root: Block, console: Console, short_names: dict = {})
             while i >= 0 and segment[i] in "\n\t\r ":
                 whitespace_r = segment[i] + whitespace_r
                 i -= 1
-            
-            
-            # md = Markdown(segment, style=" ".join(styles))
-            md = segment
+          
+            md = Markdown(segment, style=" ".join(styles))
+            # md = segment
             with console.capture() as cap:
-                console.print(md, style = " ".join(styles), end="", sep="")
-            rendered = cap.get()
-            rendered = rendered.strip()
-            # restore whitespace prior to render
+                console.print(md, end="", sep="")
+            rendered: str = cap.get()
+            rendered = " ".join(rendered.split())
+            # # restore whitespace prior to render
             rendered += whitespace_r
             if whitespace_l != whitespace_r:
                 rendered = whitespace_l + rendered
             
-            output_str = "".join( (output_str, segment ) )
+            output_str = "".join( (output_str, rendered ) )
             output_str = output_str
     
     return output_str

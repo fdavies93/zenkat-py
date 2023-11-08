@@ -61,7 +61,7 @@ def tasks(args, console: Console, config: dict):
     page_format = config["theme"]["tasks"]["page_format"]
     task_format = config["theme"]["tasks"]["task_format"]
     short_names = config["theme"]["colors"]
-
+ 
     li_limit = 0
     if args.limit != None:
         li_limit = int(args.limit)

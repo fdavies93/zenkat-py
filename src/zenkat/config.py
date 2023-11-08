@@ -41,8 +41,9 @@ def load_config() -> dict:
             new_config = tomllib.load(f)
         config = adjust_config(config, new_config)
 
-    theme_preset = str(config.get("theme_preset"))
+    theme_preset = config.get("theme_preset")
     if theme_preset is None: return config
+    theme_preset = str(theme_preset)
 
     themes = locate_themes()
 
