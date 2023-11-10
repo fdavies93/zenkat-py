@@ -19,6 +19,7 @@ class TaskRenderObj:
     spacer_head: str
     status_style: str
     status_symbol: str
+    source: zenkat.objects.ListItem
     due_str: str = ""
     priority_str: str = ""
 
@@ -66,14 +67,19 @@ def tasks(args, console: Console, config: dict):
     if args.limit != None:
         li_limit = int(args.limit)
     
+ 
     li_no = 0
+
+    groups = dict()
+    group_order = config["theme"]["tasks"]["group_order"] 
+
     li_els = []
-        
+
     for p in pages:
-        li_els = []
+        li_els = [] 
         # probably need a function factory for this at some point
         def do_fn(li: zenkat.objects.ListItem):
-            
+            # check if group option is supplied
             filter_obj = TaskFilterObj(p, li)
             if li.depth < 0: return True
             if li.type != "task": return False
@@ -113,20 +119,22 @@ def tasks(args, console: Console, config: dict):
             if priority is not None:
                 priority_str = str(priority) + metadata_symbols['priority']
 
-            render_obj = TaskRenderObj(text=li.text, spacer=spacer_str, spacer_head=spacer_end, status_style=status_str, status_symbol=status_symbol, due_str=due_str, priority_str=priority_str)
-            li_els.append(render_obj)
+            render_obj = TaskRenderObj(text=li.text, spacer=spacer_str, spacer_head=spacer_end, status_style=status_str, status_symbol=status_symbol, due_str=due_str, priority_str=priority_str, source=li) 
 
+            li_els.append(render_obj)
             li_no += 1
             return True
 
         node_tree_dft(p.lists_tree, "children", do_fn)
         if len(li_els) == 0: continue
 
-        # pass format string & page to this 
+        if args.group is not None:
+            pass
+
         page_rendered = zenkat.format.format(page_format, p, console, short_names)
 
-        print(page_rendered)
-        # pass 
+        print(page_rendered) 
+
         for el in li_els:
             formatted = zenkat.format.format(task_format, el, console, short_names)
             print(formatted)

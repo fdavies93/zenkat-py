@@ -23,6 +23,7 @@ class Block:
     styles: list[str]
     children: list[Union[str,"Block"]] 
 
+
 def replace_from(obj, f_str: str):
     
     pattern = "{{\s*(.*?)\s*}}"    
@@ -44,6 +45,7 @@ def replace_from(obj, f_str: str):
     new_str += before
         
     return new_str
+
 
 def lex_styles(f_str):
     pattern = re.compile("{:(.*?):}")
@@ -67,6 +69,7 @@ def lex_styles(f_str):
         tokens.append(f_str[last_i:])
 
     return tokens
+
 
 def parse_styles(tokens: list[str], styles = set()) -> tuple[Block, list[str]]:
 
@@ -107,6 +110,7 @@ def parse_styles(tokens: list[str], styles = set()) -> tuple[Block, list[str]]:
 
     return (Block(cur_styles, children), remaining)
 
+
 def combine_shortname_styles(styles: set[str], short_names: dict):
     output_styles: set(str) = set()
     for s in styles:
@@ -118,6 +122,7 @@ def combine_shortname_styles(styles: set[str], short_names: dict):
         output_styles.add(s)
     return output_styles
 
+
 def render_to_console_str(root: Block, console: Console, short_names: dict = {}) -> str:
     output_str = ""
 
@@ -126,9 +131,16 @@ def render_to_console_str(root: Block, console: Console, short_names: dict = {})
             output_str += render_to_console_str(segment, console, short_names)
         elif isinstance(segment, str):
             # needs to expand styles with shortname
-
+ 
             styles = combine_shortname_styles(set(root.styles), short_names)
 
+
+            sections = re.search("(\s*)(.*)",segment)
+
+           
+            # for gp in sections.groups():
+            #    print(gp, end=" / ")
+            
             i = 0
             whitespace_l = ""
             while i < len(segment) and segment[i] in "\n\t\r ":
@@ -169,6 +181,7 @@ def format(f_str, obj, console: Console, short_names: dict):
 def format_list(objs : list, f_str : str, console: Console, short_names: dict):
     outputs = [format(f_str, obj, console, short_names) for obj in objs]
     return outputs
+
 
 def format_grouped_list(f_str: str, gf_str: str, grouped_list: list[GroupedListItem], console: Console, short_names: dict):
     ls: list[str] = []
