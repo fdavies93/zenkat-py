@@ -4,23 +4,12 @@ v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/li
 
 # ZenKat
 
-## (2023-12-10) Development Note
+## Archived
 
-I've been working on a major update (i.e. v0.2) on and off for the last couple
-of months. You can see the progress I made on this on the feature/parsing branch
-which includes many improvements to grouping, sorting, and config abilities,
-along with the overall data model. However, due to some issues which are partly
-the fault of my code and partly limitations in the libraries used, maintaining
-the current version of the project has become exceptionally frustrating.
-
-I've also been using nvim heavily recently and in the context of editor plugins,
-Python has issues due to its module system. Since I'd ultimately like zenkat to
-work with as many editors as possible and on the command-line, I've decided to
-rewrite the core functionality in a compiled language. Rather than a v0.2
-release it'll be a rewrite. Updates on this coming soon. 
-
-If anyone is interested in maintaining the *Python version* of this project,
-please file an issue asking to take over the repo and we can chat about it. 
+This project is now _archived_ because of a lack of time to work on
+it or the Rust successor. If you are interested in similar projects
+please consider checking out [mdq](https://github.com/yshavit/mdq), parser projects such as [marked](https://github.com/markedjs/marked),
+and of course language servers such as [marksman](https://github.com/artempyanykh/marksman) or [markdown-oxide](https://github.com/Feel-ix-343/markdown-oxide).
 
 ## Foreword
 
